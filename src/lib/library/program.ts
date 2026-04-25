@@ -10,7 +10,7 @@ import {Event} from "./utils.js";
 import {signer} from "./wallet.js";
 import {getConnection} from "./connection.js";
 import {typeEncoder} from "./utils.js";
-import {fetchEncodedAccount, getAddressFromPublicKey, getBase64Codec, type Address, type Codec, type Instruction, type LogsNotificationsApi, type Slot, type TransactionError} from "@solana/kit";
+import {fetchEncodedAccount, getAddressFromPublicKey, getBase64Codec, type Address, type Codec, type Instruction, type LogsNotificationsApi, type ReadonlyUint8Array, type Slot, type TransactionError} from "@solana/kit";
 
 // type ProgramNotifications = <AsyncIterable<Readonly<{
 //     context: Readonly<{
@@ -183,7 +183,7 @@ export async function transact(ix: Instruction, name: string){
     return await transactMultiple([ix], [name]);
 }
 
-export async function createProgram(programClient, idl, signer: null | TransactionSendingSigner = null, noEvents = true){
+export async function createProgram(programClient: {[key: string]: any;}, idl: {[key: string]: any;}, signer: null | TransactionSendingSigner = null, noEvents = true){
     //programName should be in snakeCase
 
     if(!programClient){
@@ -296,7 +296,7 @@ export async function createProgram(programClient, idl, signer: null | Transacti
 
     }
     const DISCRIMINATOR_LENGTH = 8;
-    function _findMatchingEvent(data){
+    function _findMatchingEvent(data: ReadonlyUint8Array<ArrayBuffer>){
         for(let e in _events) {
             const event = _events[e];
             if(data.subarray(0,DISCRIMINATOR_LENGTH).join(",") === event.discriminator.join(",")){
@@ -326,16 +326,18 @@ export async function createProgram(programClient, idl, signer: null | Transacti
         const rawEvents = datas.map((a: string) => a.substring(STEM.length));
 
         for(let d of rawEvents){
-            const data = getBase64Codec().encode(d);
+            const data: ReadonlyUint8Array<ArrayBuffer> = getBase64Codec().encode(d);
             // const codec = _findMatchingEventCodec(data);
-            const {codec, name} = _findMatchingEvent(data);
+            //  = _findMatchingEvent(data);
+            const matchingEvent = _findMatchingEvent(data);
 
             // log("===")
             // log("> ",name);
 
-            if(codec){
+            if(matchingEvent){
+                const {codec, name} = matchingEvent;
                 const usable_data = data.subarray(DISCRIMINATOR_LENGTH);
-                const decoded = codec.decode(usable_data);
+                const decoded: any = codec.decode(usable_data);
 
                 // log("decoded:")
                 // log(decoded);
@@ -376,11 +378,11 @@ export async function createProgram(programClient, idl, signer: null | Transacti
         }
     }
 
-    const ixs = {};
-    const txs = {};
+    const ixs: {[key: string]: Function;} = {};
+    // const txs = {};
 
-    const tx = {};
-    const mtx = {};
+    const tx: {[key: string]: Function;} = {};
+    // const mtx = {};
 
     async function readAccount(accountName: string,address: Address){
 
@@ -418,7 +420,15 @@ export async function createProgram(programClient, idl, signer: null | Transacti
         return null;
     }
 
-    async function addIxAccounts(instruction,ixProps ){
+    type IdlInstruction = {
+        name: string,
+        discriminator: number[],
+        accounts: any[],
+        args: any[]
+    }
+    type IxProps = {[key: string]: any;};
+
+    async function addIxAccounts(instruction: IdlInstruction,ixProps: IxProps ){
 
         function getArgType(name_snake: string){
             for(let arg of instruction.args){
@@ -432,7 +442,7 @@ export async function createProgram(programClient, idl, signer: null | Transacti
         // Adds accounts to ixProps
 
         // PDAs are listed and calculated last
-        let PDAs = [];
+        let PDAs: any[] = [];
 
         // Iterate through accounts and add them as possible. Save PDAs for last in case they are derived from other
         //  accounts.
@@ -444,6 +454,8 @@ export async function createProgram(programClient, idl, signer: null | Transacti
             if(ixProps[nameCamel]) continue; // skip if it's already been added
 
             if(account.signer){ 
+                if(!signer) throw new Error("Signer not found");
+
                 ixProps[nameCamel] = signer.address;
             }else if(account.address){
                 ixProps[nameCamel] = account.address;
@@ -581,7 +593,7 @@ export async function createProgram(programClient, idl, signer: null | Transacti
                 throw new Error(`Incorrect arguments provided for ${name}. Received ${arguments.length}, expected ${argTypes.length}.`);
             }
 
-            let ixProps = {};
+            let ixProps: {[key: string]: any;} = {};
             for(let account in addedAccounts){
                 ixProps[account] = addedAccounts[account];
             }
@@ -613,7 +625,7 @@ export async function createProgram(programClient, idl, signer: null | Transacti
 
 
 
-    let account = {};
+    let account: {[key: string]: Function;} = {};
     for(let a of idl.accounts){
         const nameCamel = pascalToCamel(a.name);
         account[nameCamel] = async function(addressOrSeeds: Address | []){
