@@ -5,15 +5,46 @@
 import { browser, building, dev, version } from '$app/environment';
 import { writable } from "svelte/store";
 import { Buffer } from 'buffer';
-import {camelToSnake, snakeToCamel, camelToPascal, snakeToPascal, getPDA, pascalToCamel, sleep} from "./utils.js";
+import {camelToSnake, snakeToCamel, camelToPascal, snakeToPascal, getPDA, pascalToCamel, sleep, type EventType, type Callback} from "./utils.js";
 import {Event} from "./utils.js";
 import {signer} from "./wallet.js";
 import {getConnection} from "./connection.js";
 import {typeEncoder} from "./utils.js";
-import {fetchEncodedAccount, getAddressFromPublicKey, getBase64Codec} from "@solana/kit";
+import {fetchEncodedAccount, getAddressFromPublicKey, getBase64Codec, type Address, type Codec, type Instruction, type LogsNotificationsApi, type Slot, type TransactionError} from "@solana/kit";
 
+// type ProgramNotifications = <AsyncIterable<Readonly<{
+//     context: Readonly<{
+//         slot: Slot;
+//     }>;
+//     value: Readonly<{
+//         err: TransactionError | null;
+//         logs: readonly string[];
+//         signature: Signature;
+//     }>;
 
 import type { TransactionSendingSigner } from "@solana/signers";
+
+type ProgramNotifications = AsyncIterable<Readonly<{
+    context: Readonly<{
+        slot: Slot;
+    }>;
+    value: Readonly<{
+        err: TransactionError | null;
+        logs: readonly string[];
+        signature: Signature;
+    }>;
+}>>
+type ProgramNotification =  Readonly<{
+    context: Readonly<{
+        slot: Slot;
+    }>;
+    value: Readonly<{
+        err: TransactionError | null;
+        logs: readonly string[];
+        signature: Signature;
+    }>;
+}>
+
 
 import {type Signature} from "@solana/kit";
 
@@ -59,11 +90,11 @@ export const onTransaction = {
 }
 
 
-let addedAccounts = {};
+let addedAccounts: {[key: string]: Address;} = {};
 export function clearAddedAccounts(){
     addedAccounts = {};
 }
-export function addAccounts(accounts){
+export function addAccounts(accounts: {[key: string]: Address;}){
     for(let a in accounts){
         addedAccounts[a] = accounts[a];
     }
@@ -72,7 +103,7 @@ export function getAddedAccounts(){
     return addedAccounts;
 }
 
-function _txWasCancelled(e){
+function _txWasCancelled(e: Error){
     let msg;
     if(e.message){
         msg = e.message.toLowerCase();
@@ -89,7 +120,7 @@ function _txWasCancelled(e){
 //
 // }
 
-export async function transactMultiple(ixs = [],names = []){
+export async function transactMultiple(ixs: Instruction[] = [],names: string[] = []){
     _setTransacting(REQUESTED);
     onRequest.trigger(names);
 
@@ -123,7 +154,7 @@ export async function transactMultiple(ixs = [],names = []){
 
     }catch(e){
 
-        if(_txWasCancelled(e)){
+        if(_txWasCancelled(e as Error)){
             // TODO: properly catch this and other errors
             log("-> Rejected?");
             onCancel.trigger(names);
@@ -134,24 +165,25 @@ export async function transactMultiple(ixs = [],names = []){
 
         _setTransacting(INITIAL);
 
-        log("")
-        log("=== TEMPORARY ERROR LOGGING ===")
-        log("tx error catch:")
-        log(e);
-        log("message:",e.message);
-        log("code:",e.code);
-        log("data:",e.data);
-        log(Object.keys(e))
-        log("=== END ERROR LOGGING ===");
-        log("");
+        // TODO:
+        // log("")
+        // log("=== TEMPORARY ERROR LOGGING ===")
+        // log("tx error catch:")
+        // log(e);
+        // log("message:",e.message);
+        // log("code:",e.code);
+        // log("data:",e.data);
+        // log(Object.keys(e))
+        // log("=== END ERROR LOGGING ===");
+        // log("");
     }
 
 }
-export async function transact(ix, name){
+export async function transact(ix: Instruction, name: string){
     return await transactMultiple([ix], [name]);
 }
 
-export async function createProgram(programClient,idl, signer = null, noEvents = true){
+export async function createProgram(programClient, idl, signer: null | TransactionSendingSigner = null, noEvents = true){
     //programName should be in snakeCase
 
     if(!programClient){
@@ -172,21 +204,25 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
         throw new Error("IDL and program client do not have matching address.");
     }
 
-    async function pda(seeds){
+    async function pda(seeds: any[]){
         return getPDA(seeds, programId);
     }
 
 
     const onEventDropout = Event();
-    const on = function(eventName, callback){
+    const on = function(eventName: string, callback: Callback){
         //callback = (eventData, slotNumber, signature)
         // _eventTranslation[eventName] = onEvent
         _eventTranslation[eventName](callback);
     }
-    const _eventTranslation = {};
+    const _eventTranslation: {[key: string]: EventType;} = {};
 
     // Events
-    const _events = {};
+    const _events: {[key: string]: {
+        name: string,
+        discriminator: [],
+        codec: Codec<Function>
+    }} = {};
     for(let event of idl.events){
         const nameCamel = pascalToCamel(event.name);
         _events[event.name] = {
@@ -201,7 +237,9 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
     const abortController = new AbortController();
 
 
-    async function _beginConsumingMessage(programNotifications){
+
+
+    async function _beginConsumingMessage(programNotifications: ProgramNotifications){
         // Keep this part separate so that it can be done separately and doesn't lock up the rest of the init
 
         log("Begin consuming messages...")
@@ -235,19 +273,23 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
 
         const rpcSubscriptions = connection.rpcSubscriptions;
 
+        
 
 
-        const logsNotifications = rpcSubscriptions.logsNotifications({
+        const logsNotifications  = rpcSubscriptions.logsNotifications({
             mentions: [programId]
         });
 
-        let programNotifications;
+        let programNotifications: ProgramNotifications;
 
+        
         try{
-            programNotifications = await logsNotifications.subscribe({ abortSignal: abortController.signal });
+            programNotifications= await logsNotifications.subscribe({ abortSignal: abortController.signal });
         }catch(e){
             log("FAIL BOAT")
             console.error(e);
+            throw new Error("failed to subscribe to program")
+            return;
         }
 
         _beginConsumingMessage(programNotifications);
@@ -263,7 +305,7 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
         }
         return null;
     }
-    function _parseNotification(notification){
+    function _parseNotification(notification: ProgramNotification){
 
         // log("Notification received:")
         // log(notification)
@@ -340,7 +382,7 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
     const tx = {};
     const mtx = {};
 
-    async function readAccount(accountName,address){
+    async function readAccount(accountName: string,address: Address){
 
         const account = await fetchEncodedAccount(getConnection().rpc, address);
         if(account.exists){
@@ -361,7 +403,7 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
     }
 
 
-    function getAccountPropertyType(accountName, propertyName){
+    function getAccountPropertyType(accountName: string, propertyName: string){
         const AccountName = camelToPascal(accountName);
         const property_name = camelToSnake(propertyName);
         for(let t of  idl.types){
@@ -378,7 +420,7 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
 
     async function addIxAccounts(instruction,ixProps ){
 
-        function getArgType(name_snake){
+        function getArgType(name_snake: string){
             for(let arg of instruction.args){
                 if(arg.name === name_snake){
                     return arg.type;
@@ -401,7 +443,7 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
 
             if(ixProps[nameCamel]) continue; // skip if it's already been added
 
-            if(account.signer){
+            if(account.signer){ 
                 ixProps[nameCamel] = signer.address;
             }else if(account.address){
                 ixProps[nameCamel] = account.address;
@@ -574,7 +616,7 @@ export async function createProgram(programClient,idl, signer = null, noEvents =
     let account = {};
     for(let a of idl.accounts){
         const nameCamel = pascalToCamel(a.name);
-        account[nameCamel] = async function(addressOrSeeds){
+        account[nameCamel] = async function(addressOrSeeds: Address | []){
             if(Array.isArray(addressOrSeeds)){
                 // it's array, assume it's seeds
                 const address = await pda(addressOrSeeds);

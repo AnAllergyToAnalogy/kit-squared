@@ -107,7 +107,11 @@ export function snakeToPascal(name: string){
     return camelToPascal(snakeToCamel(name));
 }
 
-export function EventSingle(){
+
+export interface Callback {(...args: any[]):void };
+
+export interface EventSingleType { (callback: Callback): void; trigger: Function; }
+export function EventSingle(): EventSingleType{
     // On event with single callback
 
 
@@ -131,6 +135,16 @@ export function EventSingle(){
     return onEvent;
 }
 
+// export type EventType = {
+// }
+// export type Callback = Function(...args: any[]):void;
+// export type Callback = Function(...args: any[]):void;
+
+export interface OnEvent { 
+    (...args: any[]):void 
+}
+
+export interface EventType { (callback: Callback): void; killAll: Function, trigger: Function; }
 export function Event(){
     // Forbidden JS
     // returns onEvent function,
@@ -141,7 +155,7 @@ export function Event(){
     let cid = 0;
     let callbacks: {[key: string]: Function} = {};
 
-    function onEvent(callback = (...args: any[]):void => {}){
+    function onEvent(callback: Callback ){
         const _cid = cid++;
         callbacks[_cid] = callback;
         return ()=>{
@@ -169,7 +183,7 @@ export function Event(){
 }
 
 
-export async function getPDA(seeds: [], programId: Address){
+export async function getPDA(seeds: any[], programId: Address){
 
 
     let seeds_parsed = [];
