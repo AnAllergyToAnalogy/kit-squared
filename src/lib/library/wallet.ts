@@ -3,7 +3,7 @@ let log = console.log;
 
 import { writable, derived } from "svelte/store";
 import {Event} from "./utils.js";
-import {getNetwork} from "./connection.js";
+import {getNetwork, getNetworkType} from "./connection.js";
 import {
     selection,
     _selection,
@@ -77,8 +77,8 @@ export let myKey: string | null = null;
 export let me = writable(myKey as string | null);
 export let myKeyString: string | null = null;
 
-type NetworkType = "mainnet" | "devnet" | "testnet";
-let networkType: NetworkType;
+export type NetworkType = "mainnet" | "devnet" | "testnet";
+// let networkType: NetworkType;
 
 
 export function isMe(address: any){
@@ -97,8 +97,6 @@ export function getStoredWalletSelection(): string | null{
 function clearStoredWalletSelection(){
     clearStorage("walletSelection");
 }
-export const storedWalletSelectionFound = getStoredWalletSelection();
-
 
 //@ts-ignore
 export let connectedWalletAccount: UiWalletAccount | null = null;
@@ -136,7 +134,9 @@ function uiWalletAccountsAreSame(
 }
 
 async function connectWallet(uiWallet: UiWallet){
-    // console.log("connect ui wallet", uiWallet);
+
+    // log("===---===---===")
+    // log("connect ui wallet", uiWallet);
 
     _setWalletState(CONNECTING);
 
@@ -144,9 +144,15 @@ async function connectWallet(uiWallet: UiWallet){
     const wallet =
         getWalletForHandle_DO_NOT_USE_OR_YOU_WILL_BE_FIRED(uiWallet);
 
+    // log(2)
+    // log(wallet);
+
 
     // Accounts that are available?
     const existingAccounts = [...uiWallet.accounts];
+
+    // log(3)
+    // log(existingAccounts);
 
 
     // Do some stuff to get the ability to connect
@@ -154,6 +160,10 @@ async function connectWallet(uiWallet: UiWallet){
         uiWallet,
         StandardConnect,
     ) as StandardConnectFeature[typeof StandardConnect];
+
+    // log(4)
+    // log(connectFeature)
+
 
 
     // Wallet accounts for all the wallets in this connected one maybe
@@ -171,9 +181,16 @@ async function connectWallet(uiWallet: UiWallet){
         });
 
 
+    // log(5)
+    // log(accountsPromise);
+
     // I don't know whhy this is called nextAccounts. Some other layer of wallet type.
     const nextAccounts = await accountsPromise;
     // console.log("next accounts", nextAccounts);
+
+
+    // log(6)
+    // log(nextAccounts)
 
 
     // Just set connectedWallet
@@ -251,7 +268,7 @@ export async function disconnectWallet(){
 
     _setWalletState(INITIAL);
 
-    onDisconnect.trigger();
+    onWalletDisconnect.trigger();
 
 
 }
@@ -259,6 +276,7 @@ export async function disconnectWallet(){
 import type { TransactionSendingSigner } from "@solana/signers";
 
 function _buildTransactionSendingSigner(_networkType: NetworkType ): TransactionSendingSigner{
+
 
     if(!connectedWalletAccount) throw new Error("connectedWalletAccount is null")
     
@@ -296,7 +314,9 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
                     connectedWalletAccount,
                 );
 
-            let chain: IdentifierString = `solana:${networkType}` as IdentifierString;
+
+
+            let chain: IdentifierString = `solana:${getNetworkType()}` as IdentifierString;
 
             // if(mainnet){
             //     chain = 'solana:mainnet' as IdentifierString;
@@ -326,9 +346,15 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
     return transactionSendingSigner;
 }
 
-export function initialise(_networkType: NetworkType) {
 
-    networkType = _networkType;
+
+// Done By Wallet Selection Component ??
+export function initialiseWallet(
+    // _networkType: NetworkType
+) {
+
+    let networkType = getNetworkType();
+    if(!networkType) throw new Error("Network not configured.")
 
     // selection = {
     //      selected: false,
@@ -377,7 +403,7 @@ export function initialise(_networkType: NetworkType) {
         // Update local storage
         storeWalletSelection(_selection.name as string);
 
-        onConnect.trigger();
+        onWalletConnect.trigger();
 
         // console.warn("TODO: more wallet stuff")
 
@@ -436,7 +462,7 @@ export function requestAndConnectWallet(){
 
 }
 
-export function initialWalletCheck(){
+function initialWalletCheck(){
 
     // console.warn("Initial wallet check.")
 
@@ -449,5 +475,5 @@ export function initialWalletCheck(){
 }
 
 
-export const onConnect = Event();
-export const onDisconnect = Event();
+export const onWalletConnect = Event();
+export const onWalletDisconnect = Event();

@@ -25,10 +25,10 @@ export function scheduleConnect(action: Action){
 
 let _connectAction = async()=>{};
 let _disconnectAction = async()=>{};
-export function registerConnectAction(callback = async()=>{}){
+export function onConnect(callback = async()=>{}){
     _connectAction = callback;
 }
-export function registerDisconnectAction(callback = async()=>{}){
+export function onDisconnect(callback = async()=>{}){
     _disconnectAction = callback;
 }
 

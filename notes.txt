@@ -1,0 +1,76 @@
+// internalise all connect lifecycle, and externalise what is now registerConnectAction and registerDisconnectAction as onConnect and onDisconnect
+
+
+
+| connection.ts
+    getNetworkType
+    init
+    getNetwork
+    getConnection
+    checkAccountExists
+    getAccountBalance
+
+| connectEvents.ts
+//Just wires up internal connect stuff
+
+|connectSchedule.ts
+    onConnect,
+    onDisconnect,
+
+|program.ts
+    $transacting
+    TRANSACTION_STATE
+    INITIAL
+    REQUESTED
+    PENDING
+    $transactionState
+    onTransaction,
+
+    clearAddedAccounts,
+    addAccounts,
+    getAddedAccounts
+    transact
+
+    createProgram
+
+|storage.ts
+    readStorage
+    writeStorage
+    clearStorage
+
+|utils.ts
+    all
+
+|wallet.ts
+    $walletState
+    $walletInitial
+    $walletConnecting
+    $walletConnected
+    $walletError
+
+    signer
+    myKey
+    me
+    myKeyString // ?needed
+    isMe
+    getStoredWalletSelection
+
+    disconnectWallet
+    requestAndConnectWallet
+
+    initialiseWallet ??
+
+
+|walletSelection.ts
+    visible ?
+    showPrompt ?
+    hidePrompt ?
+
+    availableWallets
+    _selection
+    selection
+
+    selectWallet
+    getWalletInfo
+
+    unmountTeardown // maybe rename

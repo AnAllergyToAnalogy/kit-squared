@@ -1,11 +1,11 @@
-<script>
-    import { env } from '$env/dynamic/public';
-    import { browser } from "$app/environment"
+<script lang="ts">
+    // import { env } from '$env/dynamic/public';
+    // import { browser } from "$app/environment"
     import { onMount } from "svelte";
 
     // This import is neede to keep the first ever load from calculating wallet state values in time
-    import {walletState} from "$lib/web3/wallet.ts";
-    walletState;
+    import {walletState} from "./library/wallet.ts";
+    // walletState;
 
     import {
         selectWallet,
@@ -15,13 +15,13 @@
         hidePrompt,
         availableWallets,
         unmountTeardown
-    } from "$lib/web3/walletSelection.js";
-    import {initialise} from "$lib/web3/wallet.js";
+    } from "./library/walletSelection.ts";
+    import {initialiseWallet} from "./library/wallet.ts";
 
     // TODO: import initialise from wallet
     //      -> this registers an onSelectWallet which is the thing that registers the wallet listeners and connects
 
-    function selectWalletClick(name){
+    function selectWalletClick(name: string){
         selectWallet(name);
         hidePrompt();
     }
@@ -30,9 +30,9 @@
         hidePrompt();
     }
 
-    if(browser){
+    // if(browser){
         onMount(()=>{
-            initialise(env.PUBLIC_USE_MAINNET);
+            initialiseWallet();
 
             // this used to have startWalletFindCycle but pretty sure that isn't needed anymore
             return ()=>{
@@ -40,7 +40,7 @@
             }
         })
 
-    }
+    // }
 
 </script>
 
@@ -108,7 +108,7 @@
                             {/if}
                         </div>
 
-                        <button onclick={cancelClick} type={"cancel"} > Cancel </button>
+                        <button onclick={cancelClick}  > Cancel </button>
                     </div>
 
 

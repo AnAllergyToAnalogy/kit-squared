@@ -2,7 +2,7 @@
 // - tx triggers
 // multi tx stuff
 
-import { browser, building, dev, version } from '$app/environment';
+// import { browser, building, dev, version } from '$app/environment';
 import { writable } from "svelte/store";
 import { Buffer } from 'buffer';
 import {camelToSnake, snakeToCamel, camelToPascal, snakeToPascal, getPDA, pascalToCamel, sleep, type EventType, type Callback} from "./utils.js";
@@ -179,9 +179,12 @@ export async function transactMultiple(ixs: Instruction[] = [],names: string[] =
     }
 
 }
+// todo: rename to transact
+
 export async function transact(ix: Instruction, name: string){
     return await transactMultiple([ix], [name]);
 }
+
 
 export async function createProgram(programClient: {[key: string]: any;}, idl: {[key: string]: any;}, signer: null | TransactionSendingSigner = null, noEvents = true){
     //programName should be in snakeCase

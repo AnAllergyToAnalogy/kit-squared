@@ -2,7 +2,7 @@
 // register for a reconnect. But this edge case not currently worth the time since it can always be solved with a page
 //  reset.
 
-import {disconnectWallet, initialWalletCheck} from "./wallet.js";
+import {disconnectWallet} from "./wallet.js";
 
 // //@ts-ignore
 // console = {
@@ -39,8 +39,6 @@ function walletHasSignAndSendFeature(
 ): wallet is WalletWithFeatures<StandardEventsFeature> {
     return SolanaSignAndSendTransaction in wallet.features;
 }
-
-
 
 
 export const visible = writable(false);
@@ -123,6 +121,9 @@ let walletMap: {[key: string]: WalletMapElement
 export let availableWallets: string[] = [];
 
 
+
+
+
 // TODO === maybe these need to be Store things
 
 // TODO #2: actual todo - have a setInterval that constantly re-runs the below or some portion of it.
@@ -169,7 +170,7 @@ _recheckWallets();
 let selectedWalletIndex = -1;
 let selectedWalletAddress: null | string;
 
-let walletWatchInterval =setInterval(async ()=>{
+let walletWatchInterval = setInterval(async ()=>{
     // Interval to watch for changes in selected/connected wallet
 
     if(!outputWallets || selectedWalletIndex === -1) return;

@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/public';
+// import { env } from '$env/dynamic/public';
 
 let log = console.log;
 
@@ -35,6 +35,7 @@ import {
 
 // export { type RpcTransport } from '@solana/kit';
 import { createRecentSignatureConfirmationPromiseFactory } from '@solana/transaction-confirmation';
+import type { NetworkType } from './wallet.js';
 
 declare const sendTransactionFromInstructionsWithWalletAppFactory: (rpc: ReturnType<typeof createSolanaRpcFromTransport>) => ({ feePayer, instructions, abortSignal, }: {
     feePayer: TransactionSendingSigner;
@@ -65,12 +66,16 @@ declare const sendTransactionFromInstructionsWithWalletAppFactory: (rpc: ReturnT
 
 let rpcUrl: string | null  = null;
 let wsUrl: string | null = null;
-let network: string | null = null;
+let network: NetworkType | null = null;
 
-export function configureNetwork(
+export function getNetworkType(){
+    return network;
+}
+
+export function init(
     http: string,
     ws: string,
-    networkType: string = "mainnet",
+    networkType: NetworkType = "mainnet",
 ){
     rpcUrl  = http; 
     wsUrl   = ws; 

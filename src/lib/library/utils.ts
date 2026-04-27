@@ -8,9 +8,9 @@ import {getProgramDerivedAddress, type Address} from "@solana/kit";
 import * as kit from "@solana/kit";
 
 // import { setNetwork } from "./connection.js";
-import {browser} from "$app/environment";
+// import {browser} from "$app/environment";
 // import {createProgram} from "./program.js";
-import {scheduleConnect, registerConnectAction, registerDisconnectAction, startConnectSchedule} from "./connectSchedule.js";
+// import {scheduleConnect, registerConnectAction, registerDisconnectAction, startConnectSchedule} from "./connectSchedule.js";
 
 
 
@@ -18,7 +18,7 @@ export const ZERO_ADDRESS = "11111111111111111111111111111111";
 
 
 export function integerTypeToSize(type: string){
-    return type.substr(1);
+    return type.substring(1);
 }
 export function isIntergerType(type: string){
     const types = ["isize","usize"];
