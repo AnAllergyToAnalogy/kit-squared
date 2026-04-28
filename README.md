@@ -18,7 +18,7 @@ init(http, ws, networkType)
 
  Where `http` and `ws` are the respective RPC urls, and `networkType` is either `"mainnet"`,`"devnet"` or `"testnet"`.
 
-Full details available in the [Initialisation section of the docs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/INITIALISATION.md)/
+Full details available in the [Initialisation section of the docs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/INITIALISATION.md).
 
 
 ## Wallet Connection
@@ -65,7 +65,7 @@ This program helper has methods that make it easy to
 - Read Accounts
 
 _example:_
-```typesccript
+```typescript
 //Create the helper
 const myProgram = createProgram(yourProgramClient, yourIdl, signerFromConnectedWallet);
 
