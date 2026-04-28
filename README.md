@@ -4,7 +4,11 @@
 
  Kit² provides wallet connection, transaction functionality (including helpers) and features such as account management as well as program helpers (interfaces) for Anchor programs. It uses `@wallet-standard` for dealing with wallets.
 
- # Initialising
+[Skip to Contents](#contents)
+
+[Skip to Example Project](---)
+
+ ## Initialising
 
  To initialise the library, you must initialise it with your RPC urls and specify the network type:
 
@@ -18,7 +22,7 @@ Full details available in the Initialisation section of the docs.
 
 
 
-# Wallet Connection
+## Wallet Connection
 
 The Kit² library watches for injected wallets (ie, Phantom, Metamask, etc.). 
 
@@ -45,7 +49,7 @@ Full details available in the Wallet section of the docs.
 
 
 
-# Programs
+## Programs
 
 To create an interface/helper for a program, both its IDL and Codama-generated program client must be provided. A signer object (provided by wallet connection) may also be provided, but if it is absent this helper can not be used to send transactions.
 
@@ -96,24 +100,24 @@ const accountData = await myProgram.account.myAccountType(["seeds","for","anothe
 
 Full details available in the Program section of the docs
 
-# Transactions
+## Transactions
 
 Kit² provides functions for sending transactions, both as #methods of program helpers and generic ones for sending any instructions.
 
 It also tracks the transaction state, and fires events when the tx state changes.
 
 
-## Sending Transactions
+### Sending Transactions
 Send a transaction with any instructions using
 ```typescript
 transact(ixs, names);
 ```
 Where `ixs` is an array of `@solana/kit` `Instruction`s, and `names` is an optional array of ix names that will be fired with each tx lifecycle event.
 
-## Transaction Lifecycle
+### Transaction Lifecycle
 Kit² only expects one tx to be in progress at any given time. While it doesn't prevent multiple simultaneous txs, the tx-lifecycle management is simplified for only one.
 
-### transactionState
+#### transactionState
 
 The library provides a store with the current transaction state, `$transactionState`, which can take the following values:
 
@@ -123,7 +127,7 @@ The library provides a store with the current transaction state, `$transactionSt
 
 Note, when a tx is confirmed or fails, it will revert to    `"INITIAL"` state.
 
-### Lifecycle Events
+#### Lifecycle Events
 The library fires events every time the tx changes state. You may register callbacks for any of these, with the following format:
 
 ```typescript
@@ -142,9 +146,27 @@ The lifecycle events are:
 
 Full details available in the Transaction section of the docs
 
-# Accounts
+## Accounts
 
-# Integer types and PDAs
+Kit² allows you to easily manage accounts included in a program tx. Where possible, program function and IX invocations will infer account addresses from the IDL/client. But in cases where it isn't possible, or if you want to overwrite the inferred account addresses, you can provide them with `addAccounts`.
+
+```typescript
+addAccounts({
+    accountName: accountAddress,
+    otherAccountName: otherAccountAddress,
+})
+```
+
+These will be included with any program ix or tx until they are overwritten, or removed with 
+
+```typescript
+clearAddedAccounts()
+```
+
+Full details available in the [Accounts section of the docs](--)
+
+
+## Integer types and PDAs
 
 Kit² uses BigInts for dealing with integers, and will be accepted for all integer function params, and be used in all returned integer values. 
 
@@ -169,3 +191,9 @@ Full details available in the [Integers section of the docs]
 
 
 # Contents
+
+
+
+### [Utils](--)
+
+##
