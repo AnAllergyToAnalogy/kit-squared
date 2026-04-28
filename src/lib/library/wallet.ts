@@ -81,7 +81,7 @@ export type NetworkType = "mainnet" | "devnet" | "testnet";
 // let networkType: NetworkType;
 
 
-export function isMe(address: any){
+export function isMe(address: any): boolean{
     if(!address || !myKey) return false;
     return myKey.toString() === address.toString();
 }

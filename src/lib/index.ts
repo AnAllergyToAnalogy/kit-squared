@@ -67,4 +67,4 @@ export  {
     showPrompt,
     hidePrompt,
 
- } from "./library/walletSelectionComponent.js";
+ } from "./components/walletSelectionComponent.js";

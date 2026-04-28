@@ -1,8 +1,8 @@
 let log = console.log;
 
 import { writable } from "svelte/store";
-import { getStoredWalletSelection } from "./wallet.js";
-import { availableWallets, recheckWallets, selectWallet, stopExpectWallet } from "./walletSelection.js";
+import { getStoredWalletSelection } from "../library/wallet.js";
+import { availableWallets, recheckWallets, selectWallet, stopExpectWallet } from "../library/walletSelection.js";
 
 export function requestAndConnectWallet(){
     log("request and connect wallet..")

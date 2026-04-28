@@ -68,7 +68,7 @@ let rpcUrl: string | null  = null;
 let wsUrl: string | null = null;
 let network: NetworkType | null = null;
 
-export function getNetworkType(){
+export function getNetworkType(): NetworkType | null{
     return network;
 }
 
@@ -169,11 +169,12 @@ export function getConnection() {
 }
 
 
+// !!! TODO
 export async function checkAccountExists(address: Address): Promise<boolean>{
-    return true; 
+    // return true; 
     //todo: this
-//    return await(await getAccountBalance(address)).value > 0n;
+   return await getAccountBalance(address) > 0n;
 }
-export async function getAccountBalance(address: Address){
-    return await getConnection().getLamportBalance(address);
+export async function getAccountBalance(address: Address): Promise<bigint>{
+    return await(await getConnection().getLamportBalance(address)).value;
 }

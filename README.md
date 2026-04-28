@@ -18,8 +18,7 @@ init(http, ws, networkType)
 
  Where `http` and `ws` are the respective RPC urls, and `networkType` is either `"mainnet"`,`"devnet"` or `"testnet"`.
 
-Full details available in the Initialisation section of the docs.
-
+Full details available in the [Initialisation section of the docs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/INITIALISATION.md)/
 
 
 ## Wallet Connection
@@ -45,7 +44,7 @@ onDisconnect(()=>{
 });
 ```
 
-Full details available in the Wallet section of the docs.
+Full details available in the [Wallet section of the docs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/WALLET.md).
 
 
 
@@ -98,7 +97,7 @@ const accountData = await myProgram.account.myAccountType(["seeds","for","anothe
 
 ```
 
-Full details available in the Program section of the docs
+Full details available in the [Program section of the docs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/PROGRAM.md).
 
 ## Transactions
 
@@ -192,8 +191,10 @@ Full details available in the [Integers section of the docs]
 
 # Contents
 
-### [Initialisation](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/CLIENT.md)
-Full details on initialise environment, getting account balance, and retreiving current environment objects.
+### [Initialisation](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/INITIALISATION.md)
+Full details on initialising.
+
+### [Wallet]
 
 
 

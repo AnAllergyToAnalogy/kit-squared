@@ -4,7 +4,7 @@
     import { onMount } from "svelte";
 
     // This import is neede to keep the first ever load from calculating wallet state values in time
-    import {walletState} from "./library/wallet.ts";
+    // import {walletState} from "./library/wallet.ts";
     // walletState;
 
     import {
@@ -17,7 +17,7 @@
         unmountTeardown
     } from "./library/walletSelection.ts";
     import {initialiseWallet} from "./library/wallet.ts";
-    import { hidePrompt, visible } from "./library/walletSelectionComponent.ts";
+    import { hidePrompt, visible } from "./components/walletSelectionComponent.ts";
 
     
 
