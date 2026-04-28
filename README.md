@@ -192,6 +192,9 @@ Full details available in the [Integers section of the docs]
 
 # Contents
 
+### [Initialisation](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/CLIENT.md)
+Full details on initialise environment, getting account balance, and retreiving current environment objects.
+
 
 
 ### [Utils](--)
