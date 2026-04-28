@@ -10,13 +10,16 @@
     import {
         selectWallet,
         getWalletInfo,
-        visible,
-        showPrompt,
-        hidePrompt,
+        // visible,
+        // showPrompt,
+        // hidePrompt,
         availableWallets,
         unmountTeardown
     } from "./library/walletSelection.ts";
     import {initialiseWallet} from "./library/wallet.ts";
+    import { hidePrompt, visible } from "./library/walletSelectionComponent.ts";
+
+    
 
     // TODO: import initialise from wallet
     //      -> this registers an onSelectWallet which is the thing that registers the wallet listeners and connects
@@ -44,7 +47,7 @@
 
 </script>
 
-
+<!-- TODO: De-stye -->
 
 <style>
     #walletSelectionArea{

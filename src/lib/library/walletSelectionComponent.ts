@@ -1,0 +1,44 @@
+let log = console.log;
+
+import { writable } from "svelte/store";
+import { getStoredWalletSelection } from "./wallet.js";
+import { availableWallets, recheckWallets, selectWallet, stopExpectWallet } from "./walletSelection.js";
+
+export function requestAndConnectWallet(){
+    log("request and connect wallet..")
+
+    // if (has wallet already logged somehow)
+    //   use that one
+    // else
+    //   show wallet selection thing
+    //      which triggers connect when they select one
+
+    const stored = getStoredWalletSelection();
+
+    if(stored && availableWallets.includes(stored)){
+        // console.warn("select stored wallet..")
+        selectWallet(stored);
+    }else{
+
+        if(availableWallets.length === 1){
+            // Only one wallet available, auto select that
+            selectWallet(availableWallets[0]);
+        }else{
+            // Show wallet selection thing
+            showPrompt();
+        }
+    }
+
+}
+
+
+export const visible = writable(false);
+export function showPrompt(){
+    stopExpectWallet();
+    recheckWallets();
+
+    visible.set(true);
+}
+export function hidePrompt(){
+    visible.set(false);
+}

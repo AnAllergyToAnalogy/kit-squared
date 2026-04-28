@@ -10,10 +10,10 @@ import {
     onSelectWallet,
     selectWallet,
     availableWallets,
-    showPrompt,
-    expectWallet, clearSelectedVars
+    expectWallet, clearSelectedVars,
+    unmountTeardown
 } from "./walletSelection.js";
-import {clearStorage, readStorage, writeStorage} from "./storage.js";
+import {clearStorage, readStorage, writeStorage} from "./utils.js";
 import {
     getOrCreateUiWalletAccountForStandardWalletAccount_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
     getWalletAccountForUiWalletAccount_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
@@ -266,8 +266,10 @@ export async function disconnectWallet(){
     myKey = null;
     me.set(null);
 
+
     _setWalletState(INITIAL);
 
+    log("disconnected. triggering onWalletDisconnect")
     onWalletDisconnect.trigger();
 
 
@@ -349,6 +351,7 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
 
 
 // Done By Wallet Selection Component ??
+//  -> should be done when main init is done
 export function initialiseWallet(
     // _networkType: NetworkType
 ) {
@@ -434,38 +437,12 @@ export function initialiseWallet(
 
 }
 
-
-export function requestAndConnectWallet(){
-    log("request and connect wallet..")
-
-    // if (has wallet already logged somehow)
-    //   use that one
-    // else
-    //   show wallet selection thing
-    //      which triggers connect when they select one
-
-    const stored = getStoredWalletSelection();
-
-    if(stored && availableWallets.includes(stored)){
-        // console.warn("select stored wallet..")
-        selectWallet(stored);
-    }else{
-
-        if(availableWallets.length === 1){
-            // Only one wallet available, auto select that
-            selectWallet(availableWallets[0]);
-        }else{
-            // Show wallet selection thing
-            showPrompt();
-        }
-    }
-
+export function unmountWallet(){
+    unmountTeardown();
 }
 
+
 function initialWalletCheck(){
-
-    // console.warn("Initial wallet check.")
-
     //Called by walletSelection.ts after it first sees what wallets it has
     if(getStoredWalletSelection()){
         // console.warn("Has stored..")

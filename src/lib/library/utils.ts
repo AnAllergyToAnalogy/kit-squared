@@ -1,6 +1,7 @@
 // TODO: add/copy in as needed
 
 
+import {browser} from "$app/environment";
 
 let log =console.log;
 
@@ -441,4 +442,19 @@ export function parseMilliseconds(time: bigint){
 
 export function isSameKey(key0: any,key1: any){
     return key0.toString() === key1.toString();
+}
+
+
+
+
+export function readStorage(key: string,defaultVal: any = null){
+    return browser ? window.localStorage.getItem(key) ?? defaultVal : defaultVal;
+    // return window.localStorage.getItem(key) ?? defaultVal;
+
+}
+export function writeStorage(key: string,value: any){
+    localStorage.setItem(key,value);
+}
+export function clearStorage(key: string){
+    localStorage.removeItem(key);
 }

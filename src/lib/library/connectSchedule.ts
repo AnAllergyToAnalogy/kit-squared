@@ -1,4 +1,5 @@
 import {writable} from "svelte/store";
+import { onWalletConnect, onWalletDisconnect } from "./wallet.js";
 
 let log = console.log;
 
@@ -26,9 +27,11 @@ export function scheduleConnect(action: Action){
 let _connectAction = async()=>{};
 let _disconnectAction = async()=>{};
 export function onConnect(callback = async()=>{}){
+    // log("onConnect registered")
     _connectAction = callback;
 }
 export function onDisconnect(callback = async()=>{}){
+    // log("onDisconnect registered")
     _disconnectAction = callback;
 }
 
@@ -62,7 +65,7 @@ async function _checkSchedule(loopback = false){
             // await loadInitialData(true);
 
         }else if(next === "disconnect"){
-            log(">> Execute scheduled disconnect");
+            // log(">> Execute scheduled disconnect");
 
             await _disconnectAction();
 
@@ -87,3 +90,10 @@ export function startConnectSchedule(){
     checkingQueue = false;
     _checkSchedule();
 }
+
+onWalletConnect(()=>{
+    scheduleConnect("connect");
+});
+onWalletDisconnect(()=>{
+    scheduleConnect("disconnect");
+});

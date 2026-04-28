@@ -120,7 +120,7 @@ function _txWasCancelled(e: Error){
 //
 // }
 
-export async function transactMultiple(ixs: Instruction[] = [],names: string[] = []){
+export async function transact(ixs: Instruction[] = [],names: string[] = []){
     _setTransacting(REQUESTED);
     onRequest.trigger(names);
 
@@ -181,8 +181,9 @@ export async function transactMultiple(ixs: Instruction[] = [],names: string[] =
 }
 // todo: rename to transact
 
-export async function transact(ix: Instruction, name: string){
-    return await transactMultiple([ix], [name]);
+export async function transactSingle(ix: Instruction, name: string | null = null){
+    let names = name ? [name] : [];
+    return await transact([ix], names);
 }
 
 
@@ -612,7 +613,7 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
 
         tx[nameCamel] = async function(){
             let ix = await ixs[nameCamel](...arguments)
-            await transact(ix,nameCamel);
+            await transactSingle(ix,nameCamel);
         }
 
         // get rid of mtx for now. they can build their ix and then use transactMultiple

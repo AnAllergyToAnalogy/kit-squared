@@ -1,65 +1,171 @@
-# Svelte library
+# Kit² ( Kit Squared )
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
+ A library that brings Solana Kit functionality to SvelteKit.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+ Kit² provides wallet connection, transaction functionality (including helpers) and features such as account management as well as program helpers (interfaces) for Anchor programs. It uses `@wallet-standard` for dealing with wallets.
 
-## Creating a project
+ # Initialising
 
-If you're seeing this, you've probably already done this step. Congrats!
+ To initialise the library, you must initialise it with your RPC urls and specify the network type:
 
-```sh
-# create a new project in the current directory
-npx sv create
+ ```typescript
+init(http, ws, networkType)
+ ```
 
-# create a new project in my-app
-npx sv create my-app
+ Where `http` and `ws` are the respective RPC urls, and `networkType` is either `"mainnet"`,`"devnet"` or `"testnet"`.
+
+Full details available in the Initialisation section of the docs.
+
+
+
+# Wallet Connection
+
+The Kit² library watches for injected wallets (ie, Phantom, Metamask, etc.). 
+
+To connect a specific wallet:
+
+```typescript
+selectWallet(name)
 ```
 
-To recreate this project with the same configuration:
+Where `name` is a string with the name of the injected wallet. The names of all available injected wallets are provided by an array `availableWallets`.
 
-```sh
-# recreate this project
-npx sv@0.15.1 create --template library --types ts --install yarn kit-squared
+The library manages the lifecycle of the connection/disconnection process, and allows you to register callbacks for when those processes complete:
+
+```typescript
+onConnect(()=>{
+    //do some stuff when the wallet connects
+});
+onDisconnect(()=>{
+    //do some stuff when the wallet disconnects
+});
 ```
 
-## Developing
+Full details available in the Wallet section of the docs.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
 
-```sh
-npm run dev
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# Programs
+
+To create an interface/helper for a program, both its IDL and Codama-generated program client must be provided. A signer object (provided by wallet connection) may also be provided, but if it is absent this helper can not be used to send transactions.
+
+```typescript
+createProgram(programClient, idl, signer)
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
+This program helper has methods that make it easy to
 
-## Building
+- Send transactions
+- Create Instructions
+- Subscribe to Events
+- Get PDA addesses, and
+- Read Accounts
 
-To build your library:
+_example:_
+```typesccript
+//Create the helper
+const myProgram = createProgram(yourProgramClient, yourIdl, signerFromConnectedWallet);
 
-```sh
-npm pack
+// Send a myFunction tx
+await myProgram.tx.myFunction(somePara, someOtherParam);
+
+// Build a myFunction ix for sending later
+const ix = await myProgram.ix.myFunction(somePara, someOtherParam);
+
+
+// Subscribe to an event called someEvent
+myProgram.on('someEvent', (eventData, slotNumber, signature) => {
+    const {someParam, someOtherParam} = eventData;
+
+    //do some stuff with someParam and someOtherParam
+})
+
+
+// Get the address of a PDA
+const someAccountAddress = await myProgram.pda(["seeds","for","PDA"]);
+
+
+// Read the value of an account the program owns
+//    You can either pass the address if you already know it
+const accountData = await myProgram.account.myAccountType(address);
+
+//    or you can pass the seeds like in the PDA function
+const accountData = await myProgram.account.myAccountType(["seeds","for","another","PDA"]);
+
 ```
 
-To create a production version of your showcase app:
+Full details available in the Program section of the docs
 
-```sh
-npm run build
+# Transactions
+
+Kit² provides functions for sending transactions, both as #methods of program helpers and generic ones for sending any instructions.
+
+It also tracks the transaction state, and fires events when the tx state changes.
+
+
+## Sending Transactions
+Send a transaction with any instructions using
+```typescript
+transact(ixs, names);
+```
+Where `ixs` is an array of `@solana/kit` `Instruction`s, and `names` is an optional array of ix names that will be fired with each tx lifecycle event.
+
+## Transaction Lifecycle
+Kit² only expects one tx to be in progress at any given time. While it doesn't prevent multiple simultaneous txs, the tx-lifecycle management is simplified for only one.
+
+### transactionState
+
+The library provides a store with the current transaction state, `$transactionState`, which can take the following values:
+
+- `"INITIAL"` - No transaction currently in progress
+- `"REQUESTED"` - Transaction has been requested by library but not submitted by user
+- `"PENDING"` - Transaction has been submitted by user and is awaiting confirmation or failure.
+
+Note, when a tx is confirmed or fails, it will revert to    `"INITIAL"` state.
+
+### Lifecycle Events
+The library fires events every time the tx changes state. You may register callbacks for any of these, with the following format:
+
+```typescript
+callback = (names: string[])={
+    //do some stuff 
+}
 ```
 
-You can preview the production build with `npm run preview`.
+The lifecycle events are:
+- `onTransaction.request(callback)` - A tx was requested
+- `onTransaction.submit(callback)` - A tx was submitted by user (they clicked send tx on the wallet)
+- `onTransaction.confirm(callback)` - A tx was confirmed on-chain
+- `onTransaction.cancel(callback)` - A tx was cancelled by the user
+- `onTransaction.fail(callback)` - A tx failed
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
 
-## Publishing
+Full details available in the Transaction section of the docs
 
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
+# Accounts
 
-To publish your library to [npm](https://www.npmjs.com):
+# Integer types and PDAs
 
-```sh
-npm publish
+Kit² uses BigInts for dealing with integers, and will be accepted for all integer function params, and be used in all returned integer values. 
+
+Howver, since PDAs pack data in a very specific way when deriving the address, when adding integers as seeds for PDAs, use the following format:
+```typescript
+[value, size_in_bits]
 ```
+
+so a `u16` with the value of `1234` would be passed as
+```typescript
+[1234n,16n]
+```
+
+_example_
+```typescript
+// Your PDA seeds are "user" and then the index of the user as a u32, 
+//  and you want to get user 67
+const address = await myProgram.pda(["user",[67n, 32n]]);
+```
+
+Full details available in the [Integers section of the docs]
+
+
+# Contents

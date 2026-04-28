@@ -1,6 +1,7 @@
 {
 	"name": "kit-squared",
 	"version": "0.0.1",
+	"description": "Solana Kit functionality with SvelteKit",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",

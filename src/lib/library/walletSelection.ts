@@ -41,19 +41,6 @@ function walletHasSignAndSendFeature(
 }
 
 
-export const visible = writable(false);
-export function showPrompt(){
-    stopExpectWallet();
-    _recheckWallets();
-
-    visible.set(true);
-}
-export function hidePrompt(){
-    visible.set(false);
-}
-
-
-
 
 
 
@@ -139,7 +126,7 @@ export let availableWallets: string[] = [];
 // myKey and trigger the disconnect/connect cycle
 
 let outputWallets: Wallet[];
-function _recheckWallets(){
+export function recheckWallets(){
     // availableWallets = [];
     // walletMap = {};
 
@@ -163,7 +150,7 @@ function _recheckWallets(){
         // installedUiWallets.push(uiWallet);
     }
 }
-_recheckWallets();
+recheckWallets();
 
 // TODO === end maybe
 
