@@ -43,6 +43,19 @@ This store will update automatically throughout the wallet connection lifecylce.
 There are also derivied stores for each state, ie `$walletInitial`, `$walletConnecting`, `$walletConnected` and `$walletError`, which are booleans that are true if `$walletState` matches their respective states.
 
 
+## Connect / Disconnect events
+
+The library also fires events when it has finished connecting or disconnecting wallets. These use the [Event pattern](TODO utils events), and callbacks can be registered as follows:
+
+```typescript
+onConnect(()=>{
+    //do some stuff when the wallet connects
+});
+onDisconnect(()=>{
+    //do some stuff when the wallet disconnects
+});
+```
+
 ## Wallet Vars
 
 Various variables related to wallet state are exposed.
@@ -75,7 +88,6 @@ function getWalletInfo(name: string)
 ```
 
 Currently only a placeholder function that returns the name of the wallet. It will provide additional info for better displaying wallet options.
-
 
 ## Teardown
 There is an internal loop which watches for specific changes that are not universally emitted by different wallets. Therefore, a `teardown` function is provided to be used when unmounting wallet functionality. 

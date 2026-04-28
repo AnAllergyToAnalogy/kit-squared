@@ -194,10 +194,20 @@ Full details available in the [Integers section of the docs]
 ### [Initialisation](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/INITIALISATION.md)
 Full details on initialising.
 
-### [Wallet]
+### [Wallet](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/WALLET.md)
+Managing wallet connections, connect-state lifecycles, and other functionality relating to injected wallets.
 
+### [Programs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/PROGRAM.md)
+Create Anchor program helpers for easily interacting with deployed programs.
 
+### [Transactions](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/TRANSACTIONS.md)
+Sending transactions and how the library handles transaction lifecycles.
 
-### [Utils](--)
+### [Accounts](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/ACCOUNTS.md)
+Managing accounts included in instructions and transactions.
 
-##
+### [Utils](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/utils/UTILS.md)
+Various utilities, some relating specific to Solana, others that are more broadly used by this library.
+
+### [Example](TODO)
+An example REPO showing basic usage of the Kit² library.
