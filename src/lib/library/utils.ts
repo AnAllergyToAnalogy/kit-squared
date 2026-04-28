@@ -107,6 +107,9 @@ export function camelToPascal(name: string){
 export function snakeToPascal(name: string){
     return camelToPascal(snakeToCamel(name));
 }
+export function pascalToSnake(name: string): string{
+    return camelToSnake(pascalToCamel(name))
+}
 
 
 export interface Callback {(...args: any[]):void };
@@ -176,7 +179,6 @@ export function Event(){
             delete callbacks[_cid];
         }
     }
-
     onEvent.trigger = triggerEvent;
     onEvent.killAll = killAll;
 
