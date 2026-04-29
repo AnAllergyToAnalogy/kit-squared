@@ -268,64 +268,7 @@ export function lamportsToSol(lamports: bigint): string{
     }
 
 }
-export function unitsToTokens(units: bigint): string{
-    function _trimTail(str: string){
-        let clean = "";
-        let i = str.indexOf(".");
-        if(i === -1){
-            return str;
-        }
-        while(true){
-            const last = str.length - 1;
-            if(str[last] === "0"){
-                if(str[last - 1] !== "."){
-                    str = str.substring(0,str.length - 1);
-                }else{
-                    return str;
-                }
-            }else{
-                return str;
-            }
 
-        }
-    }
-    let str = units.toString();
-    if(str.length <= 6){
-        let pad = 6 - str.length;
-        return _trimTail("0."+zeroes(pad)+str);
-    }else{
-        let head = str.substring(0, str.length - 6);
-        if(head.length === 0){
-            head = "0"
-        }
-
-        const tail = str.substring(head.length);
-        return _trimTail(head+"."+tail);
-    }
-}
-
-export function unitsToTokensReadable(units: bigint): string{
-    let parsed = unitsToTokens(units);
-    let num = Number(parsed);
-
-    if(num < 10){
-        return parsed;
-    }
-    num = Math.round(num);
-    if(num < 1000){
-        return num.toString()
-    }
-
-    if(num < 1_000_000){
-        let thousand = Math.round(num / 100)/10;
-        return thousand+"k"
-    }
-
-    let million = Math.round(num/100_000)/10;
-    return million+" Mil"
-
-
-}
 export function roundSol(sol: number): number{
     let lamports = solToLamports(sol);
 
@@ -355,20 +298,6 @@ export function solToLamports(sol: any){
         return BigInt(elements[0]+(elements[1].substring(0,9)) );
     }
 }
-export function tokensToUnits(tokens: any){
-    let str = tokens.toString();
-    const decimals = 6;
-
-    let elements = str.split(".");
-    if(elements.length === 1){
-        return BigInt(elements[0]+ zeroes(decimals)  )
-    }else if(elements[1].length <= decimals){
-        return BigInt(elements[0]+(elements[1].padEnd(decimals,"0")))
-    }else{
-        return BigInt(elements[0]+(elements[1].substring(0,decimals)) );
-    }
-}
-
 
 export function safeMultiply(num0: number,num1: number){
 
@@ -397,7 +326,7 @@ export function fnv32a() {
     return hval >>> 0;
 }
 
-export function now(ms = false){
+export function now(ms = false): bigint{
     let t = BigInt(Date.now());
     if(ms){
         return t;

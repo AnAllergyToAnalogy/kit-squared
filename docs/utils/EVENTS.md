@@ -51,3 +51,37 @@ onSomeEvent(()=>{/* do other stuff*/});
 //remove them all
 onSomeEvent.killAll()
 ```
+
+## `EventSingle`
+Create a single-callback event with
+```typescript
+function EventSingle()
+```
+
+This is identical to [Event](#event), except that registering a callback overwrites the previously registered one. It also does not have a `killAll` method, in stead relying on the kill function returned from callback registration.
+
+```typescript
+//Create the event
+let onSomeEvent = EventSingle();
+
+//Register a callback
+onSomeEvent(()=>{
+    console.log("Hello");
+});
+
+// Overwrite the callback with another
+let killThisCallback = onSomeEvent(()=>{
+    console.log("Goodbye");
+});
+
+//Trigger the event
+onSomeEvent.trigger();
+//this will log only "Goodbye"
+
+//Kill the callback;
+killThisCallback();
+
+//Trigger the event again
+onSomeEvent.trigger();
+// nothing will happen
+```
