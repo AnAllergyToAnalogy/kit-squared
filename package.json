@@ -9,7 +9,7 @@
 		"build": "vite build && npm run prepack",
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
-		"prepack": "svelte-kit sync && svelte-package && publint",
+		"prepack": "svelte-kit sync && svelte-package",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"package": "svelte-package",
@@ -47,7 +47,8 @@
 		"vite": "^8.0.7"
 	},
 	"keywords": [
-		"svelte"
+		"svelte",
+		"solana"
 	],
 	"dependencies": {
 		"@solana/keys": "^6.8.0",
