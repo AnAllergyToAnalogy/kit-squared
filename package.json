@@ -2,6 +2,8 @@
 	"name": "kit-squared",
 	"version": "0.0.1",
 	"description": "Solana Kit functionality with SvelteKit",
+	"license": "ISC",
+	"author": "AnAllergyToAnalogy",  
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
