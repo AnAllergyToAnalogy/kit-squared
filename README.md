@@ -162,14 +162,14 @@ These will be included with any program ix or tx until they are overwritten, or 
 clearAddedAccounts()
 ```
 
-Full details available in the [Accounts section of the docs](--)
+Full details available in the [Accounts section of the docs]( https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/ACCOUNTS.md).
 
 
 ## Integer types and PDAs
 
 Kit² uses BigInts for dealing with integers, and will be accepted for all integer function params, and be used in all returned integer values. 
 
-Howver, since PDAs pack data in a very specific way when deriving the address, when adding integers as seeds for PDAs, use the following format:
+However, since PDAs pack data in a very specific way when deriving the address, when adding integers as seeds for PDAs, use the following format:
 ```typescript
 [value, size_in_bits]
 ```
@@ -186,7 +186,7 @@ _example_
 const address = await myProgram.pda(["user",[67n, 32n]]);
 ```
 
-Full details available in the [Integers section of the docs]
+Full details available in the [PDA section of the docs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/PDAs.md).
 
 
 # Contents

@@ -187,7 +187,7 @@ export async function transactSingle(ix: Instruction, name: string | null = null
 }
 
 
-export async function createProgram(programClient: {[key: string]: any;}, idl: {[key: string]: any;}, signer: null | TransactionSendingSigner = null, noEvents = true){
+export async function createProgram(programClient: {[key: string]: any;}, idl: {[key: string]: any;}, signer: null | TransactionSendingSigner = null, noEvents = false){
     //programName should be in snakeCase
 
     if(!programClient){
