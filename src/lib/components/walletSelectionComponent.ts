@@ -1,12 +1,8 @@
-let log = console.log;
-
 import { writable } from "svelte/store";
 import { getStoredWalletSelection } from "../library/wallet.js";
 import { availableWallets, recheckWallets, selectWallet, stopExpectWallet } from "../library/walletSelection.js";
 
 export function requestAndConnectWallet(){
-    log("request and connect wallet..")
-
     // if (has wallet already logged somehow)
     //   use that one
     // else
@@ -16,7 +12,6 @@ export function requestAndConnectWallet(){
     const stored = getStoredWalletSelection();
 
     if(stored && availableWallets.includes(stored)){
-        // console.warn("select stored wallet..")
         selectWallet(stored);
     }else{
 

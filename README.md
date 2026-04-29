@@ -4,9 +4,11 @@
 
  Kit² provides wallet connection, transaction functionality (including helpers) and features such as account management as well as program helpers (interfaces) for Anchor programs. It uses `@wallet-standard` for dealing with wallets.
 
+This library is in development, in a pre-release state. If you stumble across it and find any issues, please let me know via [GitHub](https://github.com/anallergyToAnalogy/kit-squared).
+
 [Skip to Contents](#contents)
 
-[Skip to Example Project](---)
+<!-- [Skip to Example Project](---) -->
 
  ## Initialising
 
@@ -209,5 +211,8 @@ Managing accounts included in instructions and transactions.
 ### [Utils](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/utils/UTILS.md)
 Various utilities, some relating specific to Solana, others that are more broadly used by this library.
 
-### [Example](TODO)
-An example REPO showing basic usage of the Kit² library.
+<!-- ### [Example](TODO)
+An example repo showing basic usage of the Kit² library. -->
+
+### Example
+TODO: example repo showing basic usage of the Kit² library.

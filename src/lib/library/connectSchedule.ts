@@ -1,7 +1,6 @@
 import {writable} from "svelte/store";
 import { onWalletConnect, onWalletDisconnect } from "./wallet.js";
-
-let log = console.log;
+import { Event } from "./utils.js";
 
 export const connectIsScheduled = writable(false);
 export const disconnectIsScheduled = writable(false);
@@ -11,9 +10,6 @@ type Action = "connect" | "disconnect";
 let connectQueue: Action[] = [];
 let checkingQueue = true; //initially set to false after first init
 export function scheduleConnect(action: Action){
-
-    // log("schedule connect:",action);
-
     connectQueue.push(action);
     if(connectQueue.length > 1){
         if(([connectQueue[0],connectQueue[1]].sort()).join() === (["connect","disconnect"].sort()).join() ){
@@ -24,27 +20,14 @@ export function scheduleConnect(action: Action){
     _checkSchedule();
 }
 
-let _connectAction = async()=>{};
-let _disconnectAction = async()=>{};
-export function onConnect(callback = async()=>{}){
-    // log("onConnect registered")
-    _connectAction = callback;
-}
-export function onDisconnect(callback = async()=>{}){
-    // log("onDisconnect registered")
-    _disconnectAction = callback;
-}
 
+export const onConnect = Event();
+export const onDisconnect = Event();
 
 async function _checkSchedule(loopback = false){
 
-    // log(". check schedule..")
-
     if(checkingQueue && !loopback) return;
     checkingQueue = true;
-
-    // log("CHECK!::",connectQueue.length)
-    // log();
 
     if(connectQueue.length !== 0){
         const next = connectQueue.shift();
@@ -53,28 +36,9 @@ async function _checkSchedule(loopback = false){
         disconnectIsScheduled.set(connectQueue.includes("disconnect"));
 
         if(next === "connect"){
-            // log(">> Execute scheduled connect");
-
-            await _connectAction();
-
-            // resetData();
-            // unsubscribeFromEvents();
-            // // program = createProgram(idl,wallet)<CoinPile>;
-            // program.set(createProgram(idl,wallet)<CoinPile>);
-            // subscribeToEvents(true);
-            // await loadInitialData(true);
-
+            await onConnect.trigger();
         }else if(next === "disconnect"){
-            // log(">> Execute scheduled disconnect");
-
-            await _disconnectAction();
-
-            // resetData();
-            // unsubscribeFromEvents();
-            // // program = createProgram(idl)<CoinPile>;
-            // program.set(createProgram(idl)<CoinPile>);
-            // subscribeToEvents(false);
-            // await loadInitialData(false);
+            await onDisconnect.trigger();
         }
     }
 
@@ -86,7 +50,6 @@ async function _checkSchedule(loopback = false){
 }
 
 export function startConnectSchedule(){
-    // log("=== Start Connect Schedule")
     checkingQueue = false;
     _checkSchedule();
 }

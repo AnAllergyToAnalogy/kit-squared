@@ -1,5 +1,3 @@
-// Reexport your entry components here
-
 import { init as initConnection } from "./library/connection.js";
 import { initialiseWallet, type NetworkType } from "./library/wallet.js";
 import { startConnectSchedule } from "./library/connectSchedule.js";

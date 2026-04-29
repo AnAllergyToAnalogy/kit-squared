@@ -1,20 +1,9 @@
-// import { env } from '$env/dynamic/public';
-
-let log = console.log;
-
 import {
-    type KeyPairSigner,
     type Address,
     createSolanaRpcFromTransport,
-    sendAndConfirmTransactionFactory,
     type Instruction,
-    type Commitment,
     type TransactionSendingSigner,
-    type Lamports,
     createSolanaRpcSubscriptions,
-    type Account,
-    type Decoder,
-    type MessageModifyingSigner,
     createSolanaRpc,
 
     pipe,
@@ -23,9 +12,6 @@ import {
     setTransactionMessageFeePayerSigner,
     setTransactionMessageLifetimeUsingBlockhash,
 
-    signTransactionMessageWithSigners,
-    assertIsSendableTransaction,
-    getSignatureFromTransaction,
     assertIsTransactionMessageWithSingleSendingSigner,
     signAndSendTransactionMessageWithSigners, getBase58Decoder,
     type ReadonlyUint8Array,
@@ -33,7 +19,6 @@ import {
 } from '@solana/kit';
 
 
-// export { type RpcTransport } from '@solana/kit';
 import { createRecentSignatureConfirmationPromiseFactory } from '@solana/transaction-confirmation';
 import type { NetworkType } from './wallet.js';
 
@@ -43,26 +28,6 @@ declare const sendTransactionFromInstructionsWithWalletAppFactory: (rpc: ReturnT
     abortSignal?: AbortSignal | null;
 }) => Promise<string>;
 
-
-
-// const RPC_URLS = {
-//     localhost:  "http://127.0.0.1:8899",
-//     devnet:     "https://api.devnet.solana.com",
-//     testnet:    "https://api.testnet.solana.com",
-//     mainnet:    "https://api.mainnet-beta.solana.com",
-//     env:        env.PUBLIC_URL_RPC
-// }
-// const WS_URLS = {
-//     localhost:  "http://127.0.0.1:8899",
-//     devnet:     "wss://api.devnet.solana.com",
-//     testnet:    "wss://api.testnet.solana.com",
-//     mainnet:    "wss://api.mainnet-beta.solana.com",
-//     env:        env.PUBLIC_URL_WS
-// }
-
-
-//TODO: have made this just network name, maybe need to return to having the url
-// let network: string | null = null;
 
 let rpcUrl: string | null  = null;
 let wsUrl: string | null = null;
@@ -82,17 +47,6 @@ export function init(
     network = networkType;      
 }
 
-// export function setNetwork(networkName: string){
-//     network = networkName;
-//     // const selectedNetwork = RPC_URLS[networkName];
-//     // if(selectedNetwork){
-//     //     network = selectedNetwork;
-//     // }else{
-//     //     throw new Error(`Unknown network: ${networkName}`);
-//     // }
-// }
-
-
 export function getNetwork(){
     return {
         http: rpcUrl,
@@ -104,12 +58,6 @@ export function getNetwork(){
 function _checkNetwork(){
     if(!network) throw new Error("Network not configured. Must use configureNetwork to set rpc URLS and network type.")
 }
-
-// const rpc = createSolanaRpc('https://api.mainnet-beta.solana.com');
-//
-// const { value: balance } = await rpc.getBalance(myWallet).send();
-// const { value: accountInfo } = await rpc.getAccountInfo(myAccount).send();
-// const { value: latestBlockhash } = await rpc.getLatestBlockhash().send();
 
 function _connect(){
     _checkNetwork();

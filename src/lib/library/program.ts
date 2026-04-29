@@ -1,26 +1,10 @@
-//TODO:
-// - tx triggers
-// multi tx stuff
-
-// import { browser, building, dev, version } from '$app/environment';
 import { writable } from "svelte/store";
-import { Buffer } from 'buffer';
 import {camelToSnake, snakeToCamel, camelToPascal, snakeToPascal, getPDA, pascalToCamel, sleep, type EventType, type Callback} from "./utils.js";
 import {Event} from "./utils.js";
 import {signer} from "./wallet.js";
 import {getConnection} from "./connection.js";
 import {typeEncoder} from "./utils.js";
-import {fetchEncodedAccount, getAddressFromPublicKey, getBase64Codec, type Address, type Codec, type Instruction, type LogsNotificationsApi, type ReadonlyUint8Array, type Slot, type TransactionError} from "@solana/kit";
-
-// type ProgramNotifications = <AsyncIterable<Readonly<{
-//     context: Readonly<{
-//         slot: Slot;
-//     }>;
-//     value: Readonly<{
-//         err: TransactionError | null;
-//         logs: readonly string[];
-//         signature: Signature;
-//     }>;
+import {fetchEncodedAccount, getBase64Codec, type Address, type Codec, type Instruction, type LogsNotificationsApi, type ReadonlyUint8Array, type Slot, type TransactionError} from "@solana/kit";
 
 import type { TransactionSendingSigner } from "@solana/signers";
 
@@ -48,19 +32,10 @@ type ProgramNotification =  Readonly<{
 
 import {type Signature} from "@solana/kit";
 
-let log = console.log;
-
-// if(browser){
-//     window.Buffer = Buffer;
-// }
-
-// function readAccount(type, name){}
-
 export let _transacting = false;
 export let transacting = writable(_transacting);
 
 function _setTransacting(state: string){
-    // console.warn("set transacting:",state);
     _transacting = state !== TRANSACTION_STATE.INITIAL;
     transacting.set(_transacting);
 }
@@ -114,12 +89,6 @@ function _txWasCancelled(e: Error){
 }
 
 
-// function transact(ixObjects = []){
-//     const feePayer = signer;
-//     const instructions = [];
-//
-// }
-
 export async function transact(ixs: Instruction[] = [],names: string[] = []){
     _setTransacting(REQUESTED);
     onRequest.trigger(names);
@@ -156,30 +125,15 @@ export async function transact(ixs: Instruction[] = [],names: string[] = []){
 
         if(_txWasCancelled(e as Error)){
             // TODO: properly catch this and other errors
-            log("-> Rejected?");
             onCancel.trigger(names);
         }else{
-            log("-> Failed?");
             onFail.trigger(names);
         }
 
         _setTransacting(INITIAL);
-
-        // TODO:
-        // log("")
-        // log("=== TEMPORARY ERROR LOGGING ===")
-        // log("tx error catch:")
-        // log(e);
-        // log("message:",e.message);
-        // log("code:",e.code);
-        // log("data:",e.data);
-        // log(Object.keys(e))
-        // log("=== END ERROR LOGGING ===");
-        // log("");
     }
 
 }
-// todo: rename to transact
 
 export async function transactSingle(ix: Instruction, name: string | null = null){
     let names = name ? [name] : [];
@@ -188,8 +142,6 @@ export async function transactSingle(ix: Instruction, name: string | null = null
 
 
 export async function createProgram(programClient: {[key: string]: any;}, idl: {[key: string]: any;}, signer: null | TransactionSendingSigner = null, noEvents = false){
-    //programName should be in snakeCase
-
     if(!programClient){
         throw new Error("Missing program client.")
     }
@@ -215,8 +167,6 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
 
     const onEventDropout = Event();
     const on = function(eventName: string, callback: Callback){
-        //callback = (eventData, slotNumber, signature)
-        // _eventTranslation[eventName] = onEvent
         _eventTranslation[eventName](callback);
     }
     const _eventTranslation: {[key: string]: EventType;} = {};
@@ -245,40 +195,24 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
 
     async function _beginConsumingMessage(programNotifications: ProgramNotifications){
         // Keep this part separate so that it can be done separately and doesn't lock up the rest of the init
-
-        log("Begin consuming messages...")
-        log(programNotifications)
-
         try{
             // Consume messages.
             for await (const notification of programNotifications){
-                log("New notification:")
-                log(notification)
                 // slot: notification.context.slot : bigInt
                 // signature: notification.value.signature : string (big sig)
                 _parseNotification(notification);
             }
         }catch(e){
+            //todo e catch
             // The subscription went down.
             // Retry it and also trigger event informing connection died
-            // _subscribeToProgram();
-            log("Failed for some reason:")
-            log(e);
             onEventDropout.trigger(programName);
             setTimeout(_subscribeToProgram, 1000);
-            // _subscribeToProgram();
         }
-
-        log("hmm..")
     }
     async function _subscribeToProgram(){
-        // log(".  get connection..")
         const connection = getConnection();
-
         const rpcSubscriptions = connection.rpcSubscriptions;
-
-        
-
 
         const logsNotifications  = rpcSubscriptions.logsNotifications({
             mentions: [programId]
@@ -286,11 +220,9 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
 
         let programNotifications: ProgramNotifications;
 
-        
         try{
             programNotifications= await logsNotifications.subscribe({ abortSignal: abortController.signal });
         }catch(e){
-            log("FAIL BOAT")
             console.error(e);
             throw new Error("failed to subscribe to program")
             return;
@@ -310,10 +242,6 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
         return null;
     }
     function _parseNotification(notification: ProgramNotification){
-
-        // log("Notification received:")
-        // log(notification)
-
         // slot: notification.context.slot : bigInt
         // signature: notification.value.signature : string (big sig)
 
@@ -331,20 +259,12 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
 
         for(let d of rawEvents){
             const data: ReadonlyUint8Array<ArrayBuffer> = getBase64Codec().encode(d);
-            // const codec = _findMatchingEventCodec(data);
-            //  = _findMatchingEvent(data);
             const matchingEvent = _findMatchingEvent(data);
-
-            // log("===")
-            // log("> ",name);
 
             if(matchingEvent){
                 const {codec, name} = matchingEvent;
                 const usable_data = data.subarray(DISCRIMINATOR_LENGTH);
                 const decoded: any = codec.decode(usable_data);
-
-                // log("decoded:")
-                // log(decoded);
 
 
                 // TODO: better integer parsing than just assuming numbers should be integers
@@ -357,12 +277,11 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
 
                 _eventTranslation[name].trigger(decoded, slot, signature)
             }else{
-                log("Event Not Found:",name);
+                //todo catch event name not found
             }
         }
     }
     function _killProgramSubscription(){
-        // console.log("Kill program subscription!")
         abortController.abort();
     }
 
@@ -383,10 +302,7 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
     }
 
     const ixs: {[key: string]: Function;} = {};
-    // const txs = {};
-
     const tx: {[key: string]: Function;} = {};
-    // const mtx = {};
 
     async function readAccount(accountName: string,address: Address){
 
@@ -405,7 +321,6 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
             return null;
         }
 
-        // getConnection().getAccountsFactory()
     }
 
 
@@ -468,19 +383,14 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
                 //  accounts or variables.
                 PDAs.push(account);
             }else{
-                // log("was missed...")
+
             }
         }
 
         // Now do the PDAs
         while(PDAs.length > 0){
             const unadded = [];
-
             for(let account of PDAs){
-
-                // console.warn("add account:",account.name)
-
-
                 const seeds = [];
                 let failed = false;
                 for(let seed of account.pda.seeds){
@@ -547,9 +457,7 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
                                 }
                             }
                             break;
-                            //TODO
-                            //@ts-ignore
-                            // return encoder.address()
+
                     }
                     if(failed){
                         unadded.push(account);
@@ -557,18 +465,7 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
                     }
 
                 }
-                // const seeds = account.pda.seeds.map(seed =>{
-                //
-                //     }
-                // )
-
-
-                // log("seeds:")
-                // log(seeds)
-
                 ixProps[snakeToCamel(account.name)] = await pda(seeds);
-
-                // log("PDA:",ixProps[snakeToCamel(account.name)])
 
             }
 
@@ -615,16 +512,6 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
             let ix = await ixs[nameCamel](...arguments)
             await transactSingle(ix,nameCamel);
         }
-
-        // get rid of mtx for now. they can build their ix and then use transactMultiple
-        // mtx[nameCamel] = async function(){
-        //     let ix = ixs[nameCamel](...arguments)
-        //     // return _mtxReturn(ix,nameCamel);
-        //     // returns
-        //     //  - all tx mtxs pre-loaded with ixs
-        //     //  or
-        //     //  - transact()
-        // }
     }
 
 
@@ -646,11 +533,8 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
 
 
     const returns = {
-            //on
             on,
-            //killEvents
             killEvents,
-            //killProgram
             killProgram,
 
             startSubscription: _subscribeToProgram,
@@ -665,10 +549,7 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
 
     if(signer){
         returns.tx = tx;
-        // returns.mtx = mtx;
         returns.ix = ixs;
-        // returns.txWithAccounts = txs;
-
     }
 
     return returns;

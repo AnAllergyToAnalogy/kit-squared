@@ -1,19 +1,8 @@
-// TODO: add/copy in as needed
-
-
 import {browser} from "$app/environment";
 
-let log =console.log;
 
 import {getProgramDerivedAddress, type Address} from "@solana/kit";
 import * as kit from "@solana/kit";
-
-// import { setNetwork } from "./connection.js";
-// import {browser} from "$app/environment";
-// import {createProgram} from "./program.js";
-// import {scheduleConnect, registerConnectAction, registerDisconnectAction, startConnectSchedule} from "./connectSchedule.js";
-
-
 
 export const ZERO_ADDRESS = "11111111111111111111111111111111";
 
@@ -139,10 +128,6 @@ export function EventSingle(): EventSingleType{
     return onEvent;
 }
 
-// export type EventType = {
-// }
-// export type Callback = Function(...args: any[]):void;
-// export type Callback = Function(...args: any[]):void;
 
 export interface OnEvent { 
     (...args: any[]):void 
@@ -150,7 +135,6 @@ export interface OnEvent {
 
 export interface EventType { (callback: Callback): void; killAll: Function, trigger: Function; }
 export function Event(){
-    // Forbidden JS
     // returns onEvent function,
     //  this function returns another func which you use to unsubscribe from event
     //  onEvent.triggger(..args) triggers the event
@@ -202,21 +186,18 @@ export async function getPDA(seeds: any[], programId: Address){
         }else if(Array.isArray(seed)){
             //@ts-ignore
             if(seed.length !== 2){
-                log(seed);
                 //@ts-ignore
                 throw new Error("Unexpected seed length as Array: "+seed.length);
             }
             const value = seed[0];
             const t = seed[1];
             if(!isIntergerType(t)){
-                log(t);
                 throw new Error("Not an integer type: "+t);
             }
 
             seeds_parsed.push(typeEncoder[t].encode(value));
             // if(!isIntegerType)
         }else{
-            log(seed);
             throw new Error("Unable to interpret seed: "+seed);
         }
     }
@@ -380,8 +361,6 @@ export function isSameKey(key0: any,key1: any){
 
 export function readStorage(key: string,defaultVal: any = null){
     return browser ? window.localStorage.getItem(key) ?? defaultVal : defaultVal;
-    // return window.localStorage.getItem(key) ?? defaultVal;
-
 }
 export function writeStorage(key: string,value: any){
     localStorage.setItem(key,value);

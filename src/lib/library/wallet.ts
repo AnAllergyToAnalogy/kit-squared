@@ -3,13 +3,10 @@ let log = console.log;
 
 import { writable, derived } from "svelte/store";
 import {Event} from "./utils.js";
-import {getNetwork, getNetworkType} from "./connection.js";
+import {getNetworkType} from "./connection.js";
 import {
-    selection,
     _selection,
     onSelectWallet,
-    selectWallet,
-    availableWallets,
     expectWallet, clearSelectedVars,
     unmountTeardown
 } from "./walletSelection.js";
@@ -55,20 +52,15 @@ function _setWalletState(state: string){
 export const walletInitial = derived(walletState, ($state) => {
     return $state === WALLET_STATE.INITIAL;
 })
-// export const walletInitial = writable(true);
 export const walletConnecting = derived(walletState, ($state) => {
     return $state === WALLET_STATE.CONNECTING;
 })
-// export const walletConnecting = writable(false);
 export const walletConnected = derived(walletState, ($state) => {
     return $state === WALLET_STATE.CONNECTED;
 });
-// export const walletConnected = writable(false);
 export const walletError = derived(walletState, ($state) => {
     return $state === WALLET_STATE.ERROR;
 })
-// export const walletError = writable(false);
-
 
 
 
@@ -78,8 +70,6 @@ export let me = writable(myKey as string | null);
 export let myKeyString: string | null = null;
 
 export type NetworkType = "mainnet" | "devnet" | "testnet";
-// let networkType: NetworkType;
-
 
 export function isMe(address: any): boolean{
     if(!address || !myKey) return false;
@@ -106,18 +96,6 @@ export let hasConnectedWalletAccount = writable(false);
 export let connectedWallet: UiWallet | null = null;
 //@ts-ignore
 export let hasConnectedWallet = writable(false);
-
-
-// let existingWalletUnsubscribe = null;
-// function _killExistingWallet(){
-//     if(existingWalletUnsubscribe){
-//         existingWalletUnsubscribe();
-//         existingWalletUnsubscribe = null;
-//     }
-//
-//     //TOOD: any other teardown
-// }
-
 
 function uiWalletAccountsAreSame(
     a: UiWalletAccount,
@@ -246,8 +224,8 @@ export async function disconnectWallet(){
     clearSelectedVars();
 
     if (!connectedWallet) {
-        // log("connected wallet var empty. just clear vars.")
-        // log("one or both expected account objects are missing")
+        //  connected wallet var empty. just clear vars.
+        //   one or both expected account objects are missing
     }else{
         const disconnectFeature = getWalletFeature(
             connectedWallet,
@@ -320,17 +298,10 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
 
             let chain: IdentifierString = `solana:${getNetworkType()}` as IdentifierString;
 
-            // if(mainnet){
-            //     chain = 'solana:mainnet' as IdentifierString;
-            // }else{
-            //     chain = 'solana:devnet' as IdentifierString;
-            // }
-
 
             const inputWithOptions = {
                 ...options,
                 transaction: wireTransactionBytes as Uint8Array,
-                // chain: `solana:${getNetwork()}` as IdentifierString,
                 chain,
                 account: walletAccount,
             };
@@ -340,7 +311,6 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
                 ),
                 abortSignal,
             );
-            // console.log("sign signature", signature);
             return Object.freeze([signature as SignatureBytes]);
         },
     };
@@ -348,53 +318,20 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
     return transactionSendingSigner;
 }
 
-
-
-// Done By Wallet Selection Component ??
-//  -> should be done when main init is done
-export function initialiseWallet(
-    // _networkType: NetworkType
-) {
+// Done by main init
+export function initialiseWallet() {
 
     let networkType = getNetworkType();
     if(!networkType) throw new Error("Network not configured.")
-
-    // selection = {
-    //      selected: false,
-    //      wallet: {
-    //          wallet,
-    //          uiWallet
-    //      },
-    //      name: null,
-    // }
-
-
 
     onSelectWallet(async ()=>{
 
         if(!_selection || !_selection.wallet) throw new Error("Wallet selection is null");
 
-        // log("-> on Select wallet")
-            // They just specified which wallet they are gonna use it didn't connect. Connect i done else where
+        // They just specified which wallet they are gonna use it didn't connect. Connect is done else where
 
-
-
-        //Unlisten previous wallet if there is one
-        // if(signer){
-        //     //Todo: rework this for new signer thing
-        //     signer.removeAllListeners();
-        //
-        //     _killExistingWallet();
-        // }
-
-        // console.warn("Before connect wallet")
         // Connect wallet
         await connectWallet(_selection.wallet.uiWallet);
-
-        // console.warn("after connect wallet");
-
-        // Update signer object
-        // signer = _selection.wallet;
 
         
         signer = _buildTransactionSendingSigner(networkType);
@@ -407,29 +344,6 @@ export function initialiseWallet(
         storeWalletSelection(_selection.name as string);
 
         onWalletConnect.trigger();
-
-        // console.warn("TODO: more wallet stuff")
-
-        // TODO: Create the wallet thing that can be subscribed to
-        //
-        //
-        // // Subscribe to connect and disconnect events
-        // wallet.on("connect", ()=>{
-        //     myKey = wallet.publicKey;
-        //     me.set(myKey.toString());
-        //     onConnect.trigger();
-        // });
-        // wallet.on("disconnect", ()=>{
-        //     myKey = null;
-        //     me.set(null);
-        //     onDisconnect.trigger();
-        // });
-        //
-        // // Trigger actual connection
-        // connect();
-        // // This has callbacks which will catch the changes
-
-        // log("-->  done on select wallet")
 
     });
 
@@ -445,8 +359,6 @@ export function unmountWallet(){
 function initialWalletCheck(){
     //Called by walletSelection.ts after it first sees what wallets it has
     if(getStoredWalletSelection()){
-        // console.warn("Has stored..")
-        // requestAndConnectWallet();
         expectWallet(getStoredWalletSelection() as string);
     }
 }

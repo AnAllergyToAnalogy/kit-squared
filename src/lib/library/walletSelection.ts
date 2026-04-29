@@ -1,21 +1,4 @@
-//TODO: there appears to be a bug when switching wallets and then switching accounts within the wallet doesnt always
-// register for a reconnect. But this edge case not currently worth the time since it can always be solved with a page
-//  reset.
-
 import {disconnectWallet} from "./wallet.js";
-
-// //@ts-ignore
-// console = {
-//     warn: ()=>{},
-//     log: ()=>{},
-//     error: ()=>{},
-// }
-
-let log = console.log;
-
-
-
-
 
 // This is only concerned with the wallet selection component / process.
 
@@ -30,7 +13,6 @@ import {
     getOrCreateUiWalletForStandardWallet_DO_NOT_USE_OR_YOU_WILL_BE_FIRED
 } from "@wallet-standard/ui-registry";
 import type { UiWallet } from "@wallet-standard/ui";
-// import {connectWallet, installedUiWallets} from "$lib/someStuff";
 
 // Technical Things
 const { get:doGetWallets } = getWallets();
@@ -39,10 +21,6 @@ function walletHasSignAndSendFeature(
 ): wallet is WalletWithFeatures<StandardEventsFeature> {
     return SolanaSignAndSendTransaction in wallet.features;
 }
-
-
-
-
 
 function subscribeToWalletEvents(
     wallet: WalletWithFeatures<StandardEventsFeature>,
@@ -57,25 +35,14 @@ function subscribeToWalletEvents(
                 return;
             }
 
-            // console.warn("wallet change listened", outputWallets, accounts);
-
             const newAccounts = accounts?.map(
                 getOrCreateUiWalletAccountForStandardWalletAccount_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.bind(
                     null,
                     wallet,
                 ),
             );
-            // console.log("new Accounts", newAccounts);
             if (newAccounts && newAccounts.length > 0) {
-                // console.error("!??! 0")
-                // connectedWalletAccount = newAccounts[0];
-                // hasConnectedWalletAccount = true;
-                // localStorage.setItem(
-                //     STORAGE_KEY,
-                //     `${wallet.name}:${newAccounts[0].address}`,
-                // );
 
-                // todo: storage
             }
             return newAccounts;
         },
@@ -89,14 +56,7 @@ type WalletMapElement = {
     uiWallet: UiWallet,
 }
 
-let walletMap: {[key: string]: WalletMapElement
-    // {    
-    //     wallet:  WalletWithFeatures<StandardEventsFeature>
-    //     uiWallet: null | UiWallet,
-    //     // name: string
-    // }
-}  = {
-
+let walletMap: {[key: string]: WalletMapElement}  = {
 //  name: {
 //     wallet,
 //     uiWallet
@@ -108,27 +68,8 @@ let walletMap: {[key: string]: WalletMapElement
 export let availableWallets: string[] = [];
 
 
-
-
-
-// TODO === maybe these need to be Store things
-
-// TODO #2: actual todo - have a setInterval that constantly re-runs the below or some portion of it.
-//     this is needed to detect cases when a user changes the account in their walelt.
-//      but, may possibly be used to simplify this whole process
-// it seems that if any of the components of this are undefined, then it requires a wallet connect:
-//  outputWallets[0].accounts[0].address
-// thus, perhaps checking for changes in this is a better catchall
-// -> may be a sligthly smarter one where if it expects a wallet to be currently connected, just check the state of that
-// otherwise, check all of them
-
-// Some wallets will stop returning a value for that, some will update it. In cases where it updates, it should change
-// myKey and trigger the disconnect/connect cycle
-
 let outputWallets: Wallet[];
 export function recheckWallets(){
-    // availableWallets = [];
-    // walletMap = {};
 
     outputWallets = doGetWallets().filter(walletHasSignAndSendFeature);
     for(let wallet of outputWallets){
@@ -146,13 +87,9 @@ export function recheckWallets(){
             uiWallet: uiWallet,
         }
         availableWallets.push(wallet.name);
-
-        // installedUiWallets.push(uiWallet);
     }
 }
 recheckWallets();
-
-// TODO === end maybe
 
 let selectedWalletIndex = -1;
 let selectedWalletAddress: null | string;
@@ -195,11 +132,7 @@ let walletWatchInterval = setInterval(async ()=>{
 
 },200);
 
-// TODO: subscribe to all events on all wallets, but filter them based on whether its selected
 
-
-
-// TODO: this may not be needed, maybe different
 export let _selection: {
     selected: boolean,
     wallet: null | WalletMapElement,
@@ -213,8 +146,6 @@ export let selection = writable(_selection);
 
 
 export function clearSelectedVars(){
-
-    // console.warn("clearSelectedVars..")
 
     selectedWalletIndex = -1;
     selectedWalletAddress = null;
@@ -231,14 +162,8 @@ export const onSelectWallet = Event();
 export async function selectWallet(name: string){
     stopExpectWallet();
 
-    // console.log("SELECT WALLET:",name)
-
     if(!name) return;
 
-
-
-
-    // TODO: populate selection var
     _selection.wallet = walletMap[name];
     _selection.name = name;
     _selection.selected = true;
@@ -246,21 +171,9 @@ export async function selectWallet(name: string){
 
     await onSelectWallet.trigger();
 
-
-    // log(name)
-    // log(Object(walletMap))
-    // log(walletMap[name].wallet.accounts.length);
-    // log(walletMap[name].wallet.accounts[0]);
-
     selectedWalletIndex = Object.keys(walletMap).indexOf(name);
 
-    // log("check wallet")
-    // log(walletMap[name].wallet);
-
     selectedWalletAddress = walletMap[name].wallet.accounts[0].address;
-    // log(walletMap[name]);
-    // log("Index:",selectedWalletIndex)
-
 }
 
 
@@ -269,10 +182,8 @@ export function getWalletInfo(name: string){
     return name;
 }
 
-// let expectedWallet = null;
 let expectWalletInterval: number;
 export function expectWallet(name: string ){
-    // log("Expect wallet:",name);
     stopExpectWallet();
 
     expectWalletInterval = setInterval(()=>{
