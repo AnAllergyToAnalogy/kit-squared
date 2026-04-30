@@ -190,9 +190,6 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
     // Set up an abort controller.
     const abortController = new AbortController();
 
-
-
-
     async function _beginConsumingMessage(programNotifications: ProgramNotifications){
         // Keep this part separate so that it can be done separately and doesn't lock up the rest of the init
         try{
