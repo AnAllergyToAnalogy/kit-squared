@@ -68,7 +68,7 @@ This program helper has methods that make it easy to
 
 _example:_
 ```typescript
-//Create the helper
+// Create the helper
 const myProgram = createProgram(yourProgramClient, yourIdl, signerFromConnectedWallet);
 
 // Send a myFunction tx
@@ -76,7 +76,6 @@ await myProgram.tx.myFunction(somePara, someOtherParam);
 
 // Build a myFunction ix for sending later
 const ix = await myProgram.ix.myFunction(somePara, someOtherParam);
-
 
 // Subscribe to an event called someEvent
 myProgram.on('someEvent', (eventData, slotNumber, signature) => {
