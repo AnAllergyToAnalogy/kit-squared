@@ -1,7 +1,7 @@
 {
 	"name": "example",
 	"private": true,
-	"version": "0.0.1",
+	"version": "0.0.3",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
@@ -19,5 +19,8 @@
 		"svelte-check": "^4.4.6",
 		"typescript": "^6.0.2",
 		"vite": "^8.0.7"
+	},
+	"dependencies": {
+		"kit-squared": "^0.0.2"
 	}
 }

@@ -30,7 +30,12 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
+		},
+		"./WalletSelection.svelte": {
+			"types": "./dist/WalletSelection.svelte.d.ts",
+			"svelte": "./dist/WalletSelection.svelte"
 		}
+
 	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"

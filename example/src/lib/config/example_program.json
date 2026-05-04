@@ -1,0 +1,189 @@
+{
+  "address": "AqVoAaPiWJUSPJVHWXmrj8KGedWihqkBiNAbTgPV43PD",
+  "metadata": {
+    "name": "example_program",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "create_account",
+      "discriminator": [
+        99,
+        20,
+        130,
+        119,
+        196,
+        235,
+        131,
+        149
+      ],
+      "accounts": [
+        {
+          "name": "new_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  115,
+                  111,
+                  109,
+                  101,
+                  83,
+                  101,
+                  101,
+                  100
+                ]
+              },
+              {
+                "kind": "arg",
+                "path": "some_param"
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "some_param",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "SomeAccount",
+      "discriminator": [
+        211,
+        98,
+        44,
+        55,
+        84,
+        126,
+        187,
+        236
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "SomeEvent",
+      "discriminator": [
+        39,
+        221,
+        150,
+        148,
+        91,
+        206,
+        29,
+        93
+      ]
+    },
+    {
+      "name": "SomeOtherEvent",
+      "discriminator": [
+        62,
+        86,
+        213,
+        50,
+        127,
+        13,
+        147,
+        190
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "NoFalseBools",
+      "msg": "No false bools!"
+    }
+  ],
+  "types": [
+    {
+      "name": "SomeAccount",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "some_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "some_u32",
+            "type": "u32"
+          },
+          {
+            "name": "some_u64",
+            "type": "u64"
+          },
+          {
+            "name": "some_bool",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SomeEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "some_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "some_u64",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SomeOtherEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "some_key",
+            "type": "pubkey"
+          },
+          {
+            "name": "some_u64",
+            "type": "u64"
+          },
+          {
+            "name": "some_u32",
+            "type": "u32"
+          },
+          {
+            "name": "some_bool",
+            "type": "bool"
+          }
+        ]
+      }
+    }
+  ],
+  "constants": [
+    {
+      "name": "FAVOURITE_FRUIT",
+      "type": "string",
+      "value": "\"bananas\""
+    }
+  ]
+}
