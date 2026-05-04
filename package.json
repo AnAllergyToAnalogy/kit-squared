@@ -1,6 +1,6 @@
 {
 	"name": "kit-squared",
-	"version": "0.0.3",
+	"version": "0.0.4",
 	"description": "Solana Kit functionality with SvelteKit",
 	"license": "ISC",
 	"author": "AnAllergyToAnalogy",  
@@ -30,12 +30,7 @@
 		".": {
 			"types": "./dist/index.d.ts",
 			"svelte": "./dist/index.js"
-		},
-		"./WalletSelection.svelte": {
-			"types": "./dist/WalletSelection.svelte.d.ts",
-			"svelte": "./dist/WalletSelection.svelte"
 		}
-
 	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"

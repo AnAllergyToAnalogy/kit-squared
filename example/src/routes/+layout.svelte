@@ -1,6 +1,6 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
-	import {WalletSelection} from "kit-squared";
+	import {WalletSelection} from "kit-squared/WalletSelection.svelte";
 		
 
 	let { children } = $props();

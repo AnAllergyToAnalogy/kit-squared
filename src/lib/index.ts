@@ -66,3 +66,6 @@ export  {
     hidePrompt,
 
  } from "./components/walletSelectionComponent.js";
+
+ //@ts-ignore
+ export * as WalletSelection from "./WalletSelection.svelte";
