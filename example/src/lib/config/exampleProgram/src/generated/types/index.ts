@@ -6,5 +6,5 @@
  * @see https://github.com/codama-idl/codama
  */
 
-export * from "./createAccount";
-export * from "./updateAccount";
+export * from "./someEvent";
+export * from "./someOtherEvent";

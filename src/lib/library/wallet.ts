@@ -343,6 +343,7 @@ export function initialiseWallet() {
         // Update local storage
         storeWalletSelection(_selection.name as string);
 
+        log("trigger connect wallet")
         onWalletConnect.trigger();
 
     });

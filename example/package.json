@@ -21,6 +21,6 @@
 		"vite": "^8.0.7"
 	},
 	"dependencies": {
-		"kit-squared": "^0.0.3"
+		"kit-squared": "^0.0.4"
 	}
 }

@@ -1,9 +1,22 @@
 <script lang="ts">
-	import favicon from '$lib/assets/favicon.svg';
-	import {WalletSelection} from "kit-squared/WalletSelection.svelte";
-		
+    import { browser } from '$app/environment';
 
+	import process from "process";
+	import * as buffer from "buffer";
+	if(browser){
+		//@ts-ignore
+    	window.Buffer = buffer.Buffer;    
+		//@ts-ignore
+		window.process = process;
+	}
+	import favicon from '$lib/assets/favicon.svg';
+
+	import WalletSelection from '$lib/components/WalletSelection.svelte';
+		
 	let { children } = $props();
+
+
+
 </script>
 
 <svelte:head>

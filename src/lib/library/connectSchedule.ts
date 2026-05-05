@@ -54,7 +54,9 @@ export function startConnectSchedule(){
     _checkSchedule();
 }
 
+console.log("register wallet connect")
 onWalletConnect(()=>{
+    console.log("bingo bango")
     scheduleConnect("connect");
 });
 onWalletDisconnect(()=>{

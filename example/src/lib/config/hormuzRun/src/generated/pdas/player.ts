@@ -7,31 +7,29 @@
  */
 
 import {
+  getAddressEncoder,
   getBytesEncoder,
   getProgramDerivedAddress,
-  getU64Encoder,
   type Address,
   type ProgramDerivedAddress,
 } from "@solana/kit";
 
-export type NewAccountSeeds = {
-  someParam: number | bigint;
+export type PlayerSeeds = {
+  playerKey: Address;
 };
 
-export async function findNewAccountPda(
-  seeds: NewAccountSeeds,
+export async function findPlayerPda(
+  seeds: PlayerSeeds,
   config: { programAddress?: Address | undefined } = {},
 ): Promise<ProgramDerivedAddress> {
   const {
-    programAddress = "AqVoAaPiWJUSPJVHWXmrj8KGedWihqkBiNAbTgPV43PD" as Address<"AqVoAaPiWJUSPJVHWXmrj8KGedWihqkBiNAbTgPV43PD">,
+    programAddress = "HhbTBeyzaGyWYWjb8bAJqhjxVQbYUBSCU9xYLZMWjAis" as Address<"HhbTBeyzaGyWYWjb8bAJqhjxVQbYUBSCU9xYLZMWjAis">,
   } = config;
   return await getProgramDerivedAddress({
     programAddress,
     seeds: [
-      getBytesEncoder().encode(
-        new Uint8Array([115, 111, 109, 101, 83, 101, 101, 100]),
-      ),
-      getU64Encoder().encode(seeds.someParam),
+      getBytesEncoder().encode(new Uint8Array([112, 108, 97, 121, 101, 114])),
+      getAddressEncoder().encode(seeds.playerKey),
     ],
   });
 }

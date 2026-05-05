@@ -59,13 +59,14 @@ export {
 
 } from "./library/walletSelection.js";
 
-export  { 
-    requestAndConnectWallet,
-    visible,
-    showPrompt,
-    hidePrompt,
+// Todo: Example Component
+// export  { 
+//     requestAndConnectWallet,
+//     visible,
+//     showPrompt,
+//     hidePrompt,
 
- } from "./components/walletSelectionComponent.js";
+//  } from "./components/walletSelectionComponent.js";
 
  //@ts-ignore
- export * as WalletSelection from "./WalletSelection.svelte";
+//  export * as WalletSelection from "./WalletSelection.svelte";

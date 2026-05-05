@@ -39,11 +39,14 @@ import {
 } from "../accounts";
 import {
   getCreateAccountInstructionAsync,
+  getUpdateAccountInstruction,
   parseCreateAccountInstruction,
+  parseUpdateAccountInstruction,
   type CreateAccountAsyncInput,
   type ParsedCreateAccountInstruction,
+  type ParsedUpdateAccountInstruction,
+  type UpdateAccountInput,
 } from "../instructions";
-import { findNewAccountPda } from "../pdas";
 
 export const EXAMPLE_PROGRAM_PROGRAM_ADDRESS =
   "AqVoAaPiWJUSPJVHWXmrj8KGedWihqkBiNAbTgPV43PD" as Address<"AqVoAaPiWJUSPJVHWXmrj8KGedWihqkBiNAbTgPV43PD">;
@@ -75,6 +78,7 @@ export function identifyExampleProgramAccount(
 
 export enum ExampleProgramInstruction {
   CreateAccount,
+  UpdateAccount,
 }
 
 export function identifyExampleProgramInstruction(
@@ -92,6 +96,17 @@ export function identifyExampleProgramInstruction(
   ) {
     return ExampleProgramInstruction.CreateAccount;
   }
+  if (
+    containsBytes(
+      data,
+      fixEncoderSize(getBytesEncoder(), 8).encode(
+        new Uint8Array([231, 31, 72, 97, 68, 133, 133, 152]),
+      ),
+      0,
+    )
+  ) {
+    return ExampleProgramInstruction.UpdateAccount;
+  }
   throw new SolanaError(
     SOLANA_ERROR__PROGRAM_CLIENTS__FAILED_TO_IDENTIFY_INSTRUCTION,
     { instructionData: data, programName: "exampleProgram" },
@@ -100,9 +115,13 @@ export function identifyExampleProgramInstruction(
 
 export type ParsedExampleProgramInstruction<
   TProgram extends string = "AqVoAaPiWJUSPJVHWXmrj8KGedWihqkBiNAbTgPV43PD",
-> = {
-  instructionType: ExampleProgramInstruction.CreateAccount;
-} & ParsedCreateAccountInstruction<TProgram>;
+> =
+  | ({
+      instructionType: ExampleProgramInstruction.CreateAccount;
+    } & ParsedCreateAccountInstruction<TProgram>)
+  | ({
+      instructionType: ExampleProgramInstruction.UpdateAccount;
+    } & ParsedUpdateAccountInstruction<TProgram>);
 
 export function parseExampleProgramInstruction<TProgram extends string>(
   instruction: Instruction<TProgram> & InstructionWithData<ReadonlyUint8Array>,
@@ -114,6 +133,13 @@ export function parseExampleProgramInstruction<TProgram extends string>(
       return {
         instructionType: ExampleProgramInstruction.CreateAccount,
         ...parseCreateAccountInstruction(instruction),
+      };
+    }
+    case ExampleProgramInstruction.UpdateAccount: {
+      assertIsInstructionWithAccounts(instruction);
+      return {
+        instructionType: ExampleProgramInstruction.UpdateAccount,
+        ...parseUpdateAccountInstruction(instruction),
       };
     }
     default:
@@ -130,7 +156,6 @@ export function parseExampleProgramInstruction<TProgram extends string>(
 export type ExampleProgramPlugin = {
   accounts: ExampleProgramPluginAccounts;
   instructions: ExampleProgramPluginInstructions;
-  pdas: ExampleProgramPluginPdas;
 };
 
 export type ExampleProgramPluginAccounts = {
@@ -143,9 +168,11 @@ export type ExampleProgramPluginInstructions = {
     input: CreateAccountAsyncInput,
   ) => ReturnType<typeof getCreateAccountInstructionAsync> &
     SelfPlanAndSendFunctions;
+  updateAccount: (
+    input: UpdateAccountInput,
+  ) => ReturnType<typeof getUpdateAccountInstruction> &
+    SelfPlanAndSendFunctions;
 };
-
-export type ExampleProgramPluginPdas = { newAccount: typeof findNewAccountPda };
 
 export type ExampleProgramPluginRequirements = ClientWithRpc<
   GetAccountInfoApi & GetMultipleAccountsApi
@@ -168,8 +195,12 @@ export function exampleProgramProgram() {
               client,
               getCreateAccountInstructionAsync(input),
             ),
+          updateAccount: (input) =>
+            addSelfPlanAndSendFunctions(
+              client,
+              getUpdateAccountInstruction(input),
+            ),
         },
-        pdas: { newAccount: findNewAccountPda },
       },
     });
   };

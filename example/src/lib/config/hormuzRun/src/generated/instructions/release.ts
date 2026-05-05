@@ -10,13 +10,12 @@ import {
   combineCodec,
   fixDecoderSize,
   fixEncoderSize,
+  getAddressDecoder,
+  getAddressEncoder,
   getBytesDecoder,
   getBytesEncoder,
-  getProgramDerivedAddress,
   getStructDecoder,
   getStructEncoder,
-  getU64Decoder,
-  getU64Encoder,
   SOLANA_ERROR__PROGRAM_CLIENTS__INSUFFICIENT_ACCOUNT_METAS,
   SolanaError,
   transformEncoder,
@@ -40,21 +39,21 @@ import {
   getNonNullResolvedInstructionInput,
   type ResolvedInstructionAccount,
 } from "@solana/program-client-core";
-import { EXAMPLE_PROGRAM_PROGRAM_ADDRESS } from "../programs";
+import { findGamePda, findPlayerPda } from "../pdas";
+import { HORMUZ_RUN_PROGRAM_ADDRESS } from "../programs";
 
-export const CREATE_ACCOUNT_DISCRIMINATOR: ReadonlyUint8Array = new Uint8Array([
-  99, 20, 130, 119, 196, 235, 131, 149,
+export const RELEASE_DISCRIMINATOR = new Uint8Array([
+  253, 249, 15, 206, 28, 127, 193, 241,
 ]);
 
-export function getCreateAccountDiscriminatorBytes(): ReadonlyUint8Array {
-  return fixEncoderSize(getBytesEncoder(), 8).encode(
-    CREATE_ACCOUNT_DISCRIMINATOR,
-  );
+export function getReleaseDiscriminatorBytes() {
+  return fixEncoderSize(getBytesEncoder(), 8).encode(RELEASE_DISCRIMINATOR);
 }
 
-export type CreateAccountInstruction<
-  TProgram extends string = typeof EXAMPLE_PROGRAM_PROGRAM_ADDRESS,
-  TAccountNewAccount extends string | AccountMeta<string> = string,
+export type ReleaseInstruction<
+  TProgram extends string = typeof HORMUZ_RUN_PROGRAM_ADDRESS,
+  TAccountGame extends string | AccountMeta<string> = string,
+  TAccountPlayer extends string | AccountMeta<string> = string,
   TAccountSigner extends string | AccountMeta<string> = string,
   TAccountSystemProgram extends string | AccountMeta<string> =
     "11111111111111111111111111111111",
@@ -63,9 +62,12 @@ export type CreateAccountInstruction<
   InstructionWithData<ReadonlyUint8Array> &
   InstructionWithAccounts<
     [
-      TAccountNewAccount extends string
-        ? WritableAccount<TAccountNewAccount>
-        : TAccountNewAccount,
+      TAccountGame extends string
+        ? WritableAccount<TAccountGame>
+        : TAccountGame,
+      TAccountPlayer extends string
+        ? WritableAccount<TAccountPlayer>
+        : TAccountPlayer,
       TAccountSigner extends string
         ? WritableSignerAccount<TAccountSigner> &
             AccountSignerMeta<TAccountSigner>
@@ -77,78 +79,83 @@ export type CreateAccountInstruction<
     ]
   >;
 
-export type CreateAccountInstructionData = {
+export type ReleaseInstructionData = {
   discriminator: ReadonlyUint8Array;
-  someParam: bigint;
+  playerKey: Address;
 };
 
-export type CreateAccountInstructionDataArgs = { someParam: number | bigint };
+export type ReleaseInstructionDataArgs = { playerKey: Address };
 
-export function getCreateAccountInstructionDataEncoder(): FixedSizeEncoder<CreateAccountInstructionDataArgs> {
+export function getReleaseInstructionDataEncoder(): FixedSizeEncoder<ReleaseInstructionDataArgs> {
   return transformEncoder(
     getStructEncoder([
       ["discriminator", fixEncoderSize(getBytesEncoder(), 8)],
-      ["someParam", getU64Encoder()],
+      ["playerKey", getAddressEncoder()],
     ]),
-    (value) => ({ ...value, discriminator: CREATE_ACCOUNT_DISCRIMINATOR }),
+    (value) => ({ ...value, discriminator: RELEASE_DISCRIMINATOR }),
   );
 }
 
-export function getCreateAccountInstructionDataDecoder(): FixedSizeDecoder<CreateAccountInstructionData> {
+export function getReleaseInstructionDataDecoder(): FixedSizeDecoder<ReleaseInstructionData> {
   return getStructDecoder([
     ["discriminator", fixDecoderSize(getBytesDecoder(), 8)],
-    ["someParam", getU64Decoder()],
+    ["playerKey", getAddressDecoder()],
   ]);
 }
 
-export function getCreateAccountInstructionDataCodec(): FixedSizeCodec<
-  CreateAccountInstructionDataArgs,
-  CreateAccountInstructionData
+export function getReleaseInstructionDataCodec(): FixedSizeCodec<
+  ReleaseInstructionDataArgs,
+  ReleaseInstructionData
 > {
   return combineCodec(
-    getCreateAccountInstructionDataEncoder(),
-    getCreateAccountInstructionDataDecoder(),
+    getReleaseInstructionDataEncoder(),
+    getReleaseInstructionDataDecoder(),
   );
 }
 
-export type CreateAccountAsyncInput<
-  TAccountNewAccount extends string = string,
+export type ReleaseAsyncInput<
+  TAccountGame extends string = string,
+  TAccountPlayer extends string = string,
   TAccountSigner extends string = string,
   TAccountSystemProgram extends string = string,
 > = {
-  newAccount?: Address<TAccountNewAccount>;
+  game?: Address<TAccountGame>;
+  player?: Address<TAccountPlayer>;
   signer: TransactionSigner<TAccountSigner>;
   systemProgram?: Address<TAccountSystemProgram>;
-  someParam: CreateAccountInstructionDataArgs["someParam"];
+  playerKey: ReleaseInstructionDataArgs["playerKey"];
 };
 
-export async function getCreateAccountInstructionAsync<
-  TAccountNewAccount extends string,
+export async function getReleaseInstructionAsync<
+  TAccountGame extends string,
+  TAccountPlayer extends string,
   TAccountSigner extends string,
   TAccountSystemProgram extends string,
-  TProgramAddress extends Address = typeof EXAMPLE_PROGRAM_PROGRAM_ADDRESS,
+  TProgramAddress extends Address = typeof HORMUZ_RUN_PROGRAM_ADDRESS,
 >(
-  input: CreateAccountAsyncInput<
-    TAccountNewAccount,
+  input: ReleaseAsyncInput<
+    TAccountGame,
+    TAccountPlayer,
     TAccountSigner,
     TAccountSystemProgram
   >,
   config?: { programAddress?: TProgramAddress },
 ): Promise<
-  CreateAccountInstruction<
+  ReleaseInstruction<
     TProgramAddress,
-    TAccountNewAccount,
+    TAccountGame,
+    TAccountPlayer,
     TAccountSigner,
     TAccountSystemProgram
   >
 > {
   // Program address.
-  const programAddress =
-    config?.programAddress ?? EXAMPLE_PROGRAM_PROGRAM_ADDRESS;
+  const programAddress = config?.programAddress ?? HORMUZ_RUN_PROGRAM_ADDRESS;
 
   // Original accounts.
   const originalAccounts = {
-    newAccount: { value: input.newAccount ?? null, isWritable: true },
+    game: { value: input.game ?? null, isWritable: true },
+    player: { value: input.player ?? null, isWritable: true },
     signer: { value: input.signer ?? null, isWritable: true },
     systemProgram: { value: input.systemProgram ?? null, isWritable: false },
   };
@@ -161,17 +168,15 @@ export async function getCreateAccountInstructionAsync<
   const args = { ...input };
 
   // Resolve default values.
-  if (!accounts.newAccount.value) {
-    accounts.newAccount.value = await getProgramDerivedAddress({
-      programAddress,
-      seeds: [
-        getBytesEncoder().encode(
-          new Uint8Array([115, 111, 109, 101, 83, 101, 101, 100]),
-        ),
-        getU64Encoder().encode(
-          getNonNullResolvedInstructionInput("someParam", args.someParam),
-        ),
-      ],
+  if (!accounts.game.value) {
+    accounts.game.value = await findGamePda();
+  }
+  if (!accounts.player.value) {
+    accounts.player.value = await findPlayerPda({
+      playerKey: getNonNullResolvedInstructionInput(
+        "playerKey",
+        args.playerKey,
+      ),
     });
   }
   if (!accounts.systemProgram.value) {
@@ -182,58 +187,65 @@ export async function getCreateAccountInstructionAsync<
   const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
   return Object.freeze({
     accounts: [
-      getAccountMeta("newAccount", accounts.newAccount),
+      getAccountMeta("game", accounts.game),
+      getAccountMeta("player", accounts.player),
       getAccountMeta("signer", accounts.signer),
       getAccountMeta("systemProgram", accounts.systemProgram),
     ],
-    data: getCreateAccountInstructionDataEncoder().encode(
-      args as CreateAccountInstructionDataArgs,
+    data: getReleaseInstructionDataEncoder().encode(
+      args as ReleaseInstructionDataArgs,
     ),
     programAddress,
-  } as CreateAccountInstruction<
+  } as ReleaseInstruction<
     TProgramAddress,
-    TAccountNewAccount,
+    TAccountGame,
+    TAccountPlayer,
     TAccountSigner,
     TAccountSystemProgram
   >);
 }
 
-export type CreateAccountInput<
-  TAccountNewAccount extends string = string,
+export type ReleaseInput<
+  TAccountGame extends string = string,
+  TAccountPlayer extends string = string,
   TAccountSigner extends string = string,
   TAccountSystemProgram extends string = string,
 > = {
-  newAccount: Address<TAccountNewAccount>;
+  game: Address<TAccountGame>;
+  player: Address<TAccountPlayer>;
   signer: TransactionSigner<TAccountSigner>;
   systemProgram?: Address<TAccountSystemProgram>;
-  someParam: CreateAccountInstructionDataArgs["someParam"];
+  playerKey: ReleaseInstructionDataArgs["playerKey"];
 };
 
-export function getCreateAccountInstruction<
-  TAccountNewAccount extends string,
+export function getReleaseInstruction<
+  TAccountGame extends string,
+  TAccountPlayer extends string,
   TAccountSigner extends string,
   TAccountSystemProgram extends string,
-  TProgramAddress extends Address = typeof EXAMPLE_PROGRAM_PROGRAM_ADDRESS,
+  TProgramAddress extends Address = typeof HORMUZ_RUN_PROGRAM_ADDRESS,
 >(
-  input: CreateAccountInput<
-    TAccountNewAccount,
+  input: ReleaseInput<
+    TAccountGame,
+    TAccountPlayer,
     TAccountSigner,
     TAccountSystemProgram
   >,
   config?: { programAddress?: TProgramAddress },
-): CreateAccountInstruction<
+): ReleaseInstruction<
   TProgramAddress,
-  TAccountNewAccount,
+  TAccountGame,
+  TAccountPlayer,
   TAccountSigner,
   TAccountSystemProgram
 > {
   // Program address.
-  const programAddress =
-    config?.programAddress ?? EXAMPLE_PROGRAM_PROGRAM_ADDRESS;
+  const programAddress = config?.programAddress ?? HORMUZ_RUN_PROGRAM_ADDRESS;
 
   // Original accounts.
   const originalAccounts = {
-    newAccount: { value: input.newAccount ?? null, isWritable: true },
+    game: { value: input.game ?? null, isWritable: true },
+    player: { value: input.player ?? null, isWritable: true },
     signer: { value: input.signer ?? null, isWritable: true },
     systemProgram: { value: input.systemProgram ?? null, isWritable: false },
   };
@@ -254,49 +266,52 @@ export function getCreateAccountInstruction<
   const getAccountMeta = getAccountMetaFactory(programAddress, "programId");
   return Object.freeze({
     accounts: [
-      getAccountMeta("newAccount", accounts.newAccount),
+      getAccountMeta("game", accounts.game),
+      getAccountMeta("player", accounts.player),
       getAccountMeta("signer", accounts.signer),
       getAccountMeta("systemProgram", accounts.systemProgram),
     ],
-    data: getCreateAccountInstructionDataEncoder().encode(
-      args as CreateAccountInstructionDataArgs,
+    data: getReleaseInstructionDataEncoder().encode(
+      args as ReleaseInstructionDataArgs,
     ),
     programAddress,
-  } as CreateAccountInstruction<
+  } as ReleaseInstruction<
     TProgramAddress,
-    TAccountNewAccount,
+    TAccountGame,
+    TAccountPlayer,
     TAccountSigner,
     TAccountSystemProgram
   >);
 }
 
-export type ParsedCreateAccountInstruction<
-  TProgram extends string = typeof EXAMPLE_PROGRAM_PROGRAM_ADDRESS,
+export type ParsedReleaseInstruction<
+  TProgram extends string = typeof HORMUZ_RUN_PROGRAM_ADDRESS,
   TAccountMetas extends readonly AccountMeta[] = readonly AccountMeta[],
 > = {
   programAddress: Address<TProgram>;
   accounts: {
-    newAccount: TAccountMetas[0];
-    signer: TAccountMetas[1];
-    systemProgram: TAccountMetas[2];
+    game: TAccountMetas[0];
+    player: TAccountMetas[1];
+    signer: TAccountMetas[2];
+    systemProgram: TAccountMetas[3];
   };
-  data: CreateAccountInstructionData;
+  data: ReleaseInstructionData;
 };
 
-export function parseCreateAccountInstruction<
+export function parseReleaseInstruction<
   TProgram extends string,
   TAccountMetas extends readonly AccountMeta[],
 >(
   instruction: Instruction<TProgram> &
     InstructionWithAccounts<TAccountMetas> &
     InstructionWithData<ReadonlyUint8Array>,
-): ParsedCreateAccountInstruction<TProgram, TAccountMetas> {
-  if (instruction.accounts.length < 3) {
+): ParsedReleaseInstruction<TProgram, TAccountMetas> {
+  if (instruction.accounts.length < 4) {
     throw new SolanaError(
       SOLANA_ERROR__PROGRAM_CLIENTS__INSUFFICIENT_ACCOUNT_METAS,
       {
         actualAccountMetas: instruction.accounts.length,
-        expectedAccountMetas: 3,
+        expectedAccountMetas: 4,
       },
     );
   }
@@ -309,10 +324,11 @@ export function parseCreateAccountInstruction<
   return {
     programAddress: instruction.programAddress,
     accounts: {
-      newAccount: getNextAccount(),
+      game: getNextAccount(),
+      player: getNextAccount(),
       signer: getNextAccount(),
       systemProgram: getNextAccount(),
     },
-    data: getCreateAccountInstructionDataDecoder().decode(instruction.data),
+    data: getReleaseInstructionDataDecoder().decode(instruction.data),
   };
 }

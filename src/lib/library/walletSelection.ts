@@ -162,6 +162,8 @@ export const onSelectWallet = Event();
 export async function selectWallet(name: string){
     stopExpectWallet();
 
+    console.log("select wallet:",name)
+
     if(!name) return;
 
     _selection.wallet = walletMap[name];
@@ -169,6 +171,7 @@ export async function selectWallet(name: string){
     _selection.selected = true;
     selection.set(_selection);
 
+    console.log("trigger select wallet")
     await onSelectWallet.trigger();
 
     selectedWalletIndex = Object.keys(walletMap).indexOf(name);

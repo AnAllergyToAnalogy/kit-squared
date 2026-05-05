@@ -6,5 +6,7 @@
  * @see https://github.com/codama-idl/codama
  */
 
-export * from "./createAccount";
-export * from "./updateAccount";
+export * from "./game";
+export * from "./player";
+export * from "./programIdentity";
+export * from "./sendShipPlayer";

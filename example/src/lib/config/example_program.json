@@ -61,6 +61,48 @@
           "type": "u64"
         }
       ]
+    },
+    {
+      "name": "update_account",
+      "discriminator": [
+        231,
+        31,
+        72,
+        97,
+        68,
+        133,
+        133,
+        152
+      ],
+      "accounts": [
+        {
+          "name": "to_update",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "some_u32",
+          "type": "u32"
+        },
+        {
+          "name": "some_u64",
+          "type": "u64"
+        },
+        {
+          "name": "some_bool",
+          "type": "bool"
+        }
+      ]
     }
   ],
   "accounts": [
