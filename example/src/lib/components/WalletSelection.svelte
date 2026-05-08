@@ -10,8 +10,7 @@
         availableWallets,
         unmountTeardown,
 
-    // } from "kit-squared";
-    } from "../../../../src/lib";
+    } from "kit-squared";
 
     import { hidePrompt, visible } from "./walletSelectionComponent";
     import { uninitialise } from "$lib";

@@ -106,8 +106,4 @@ function unmountTeardown()
 
 ## Example Wallet Selection Component
 
-An Example `WalletSelection` Component is provided, with associated functions in `walletSelectionComponent.ts`. 
-
-It should ideally be placed in Layout, or a similarly permanent location, and will handle the wallet selection process.
-
-The component can be summonned with the `requestAndConnectWallet()`.
+See implementation of a [wallet selection component in the example repo](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/example/src/lib/components/WalletSelection.svelte).

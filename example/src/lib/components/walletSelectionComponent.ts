@@ -1,6 +1,5 @@
 import { writable } from "svelte/store";
-// import { getStoredWalletSelection, availableWallets, recheckWallets, selectWallet } from "kit-squared";
-import { getStoredWalletSelection, availableWallets, recheckWallets, selectWallet } from "../../../../src/lib";
+import { getStoredWalletSelection, availableWallets, recheckWallets, selectWallet } from "kit-squared";
 
 export function requestAndConnectWallet(){
     // if (has wallet already logged somehow)

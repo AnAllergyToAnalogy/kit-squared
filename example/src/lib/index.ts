@@ -16,10 +16,7 @@ import {
    
     signer,
     transact,
-// } from "kit-squared";
-} from "../../../src/lib";
-
-
+} from "kit-squared";
 
 
 // Use free RPCs

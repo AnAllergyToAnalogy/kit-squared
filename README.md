@@ -8,7 +8,7 @@ This library is in development, in a pre-release state. If you stumble across it
 
 [Skip to Contents](#contents)
 
-<!-- [Skip to Example Project](---) -->
+[Skip to Example Project](https://github.com/AnAllergyToAnalogy/kit-squared/tree/main/example)
 
  ## Initialising
 
@@ -210,8 +210,5 @@ Managing accounts included in instructions and transactions.
 ### [Utils](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/utils/UTILS.md)
 Various utilities, some relating specific to Solana, others that are more broadly used by this library.
 
-<!-- ### [Example](TODO)
-An example repo showing basic usage of the Kit² library. -->
-
-### Example
-TODO: example repo showing basic usage of the Kit² library.
+### [Example](https://github.com/AnAllergyToAnalogy/kit-squared/tree/main/example)
+An example repo showing basic usage of the Kit² library.

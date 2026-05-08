@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { disconnectWallet, transacting, walletConnected, walletInitial, walletState } from "../../../src/lib";
+    import { disconnectWallet, transacting, walletConnected, walletInitial, walletState } from "kit-squared";
 
     import { createAccount, createTwoAccounts, readAccountAndUpdateStore, readAccountData, updateAccount } from "$lib";
     import { requestAndConnectWallet } from "$lib/components/walletSelectionComponent";
