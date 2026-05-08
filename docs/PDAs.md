@@ -31,12 +31,12 @@ When adding integers as seeds for PDAs, use the following format:
 
 so a `u16` with the value of `1234` would be passed as
 ```typescript
-[1234n,16n]
+[1234n,"u16"]
 ```
 
 _example_
 ```typescript
 // Your PDA seeds are "user" and then the index of the user as a u32, 
 //  and you want to get user 67
-const somePDA = await someHelper.pda(["user",[67n, 32n]]);
+const somePDA = await someHelper.pda(["user",[67n,"u32"]]);
 ```

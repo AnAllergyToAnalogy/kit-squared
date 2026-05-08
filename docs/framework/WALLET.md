@@ -56,6 +56,14 @@ onDisconnect(()=>{
 });
 ```
 
+_Note: A special case exists for onConnect, where if the wallet is already detected as "connected" when you register an onConnect callback, that callback will immediately fire. This can be disabled by adding a second parameter, with `false`, ie:_
+>
+```typescript
+onConnect(()=>{
+    //do some stuff when the wallet connects, but don't do it immediately if its already connected
+}, false);
+```
+
 ## Wallet Vars
 
 Various variables related to wallet state are exposed.

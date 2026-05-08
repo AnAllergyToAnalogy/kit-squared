@@ -1,20 +1,40 @@
 <script lang="ts">
-    import { createAccount, readAccount, readAccountData } from "$lib";
+    import { disconnectWallet, transacting, walletConnected, walletInitial, walletState } from "../../../src/lib";
+
+    import { createAccount, createTwoAccounts, readAccountAndUpdateStore, readAccountData, updateAccount } from "$lib";
     import { requestAndConnectWallet } from "$lib/components/walletSelectionComponent";
-    import { disconnectWallet, transacting, walletConnected, walletConnecting, walletError, walletInitial, walletState } from "kit-squared";
 
     
-
-    let readAccountInput = $state(0n);
+// Read Account
+    let readAccountInput = $state(0);
+    function readAccountClick(){
+        readAccountAndUpdateStore(readAccountInput);
+    }
+    
+// Create Account
     let createAccountInput = $state('');
     function createAccountClick(){
         createAccount(createAccountInput);
     }
-    
 
-    function readAccountClick(){
-        readAccount(readAccountInput);
+// Update Account
+    let updateAccountNumberInput = $state('');
+    let updateAccountU32Input = $state('');
+    let updateAccountU64Input = $state('');
+    let updateAccountBoolInput = $state('1');
+    function updateAccountClick(){
+        const someBool = updateAccountBoolInput === '1';
+        updateAccount(updateAccountNumberInput,updateAccountU32Input,updateAccountU64Input,someBool);
     }
+    
+// Create Two Accounts
+    let createTwoAccountsInput0 = $state('');
+    let createTwoAccountsInput1 = $state('');
+    function createTwoAccountsClick(){
+        
+         createTwoAccounts(createTwoAccountsInput0,createTwoAccountsInput1);
+    }
+
 </script>
 
 <style>
@@ -62,7 +82,7 @@
     <div>Enter u64 account number</div>
     <div>(PDA seeds are ["someSeed", accountNumber])</div>
     <div>
-        <input type="text" bind:value={readAccountInput} />
+        <input type="number" bind:value={readAccountInput} placeholder="Enter a u64 accountNumber"/>
     </div>
     <div>
         <button onclick={readAccountClick}> Read Account </button>
@@ -107,7 +127,7 @@
         <div>Enter u64 account number of the account to create</div>
         <div>(PDA seeds are ["someSeed", accountNumber])</div>
         <div>
-            <input type="text" bind:value={createAccountInput}/>
+            <input type="number" bind:value={createAccountInput} placeholder="Enter a u64 accountNumber"/>
         </div>
         <div>
             <button disabled={$transacting} onclick={createAccountClick}>Create Account</button>
@@ -118,16 +138,51 @@
     <div class="chunk">
         <div class="bold">Update An Account</div>
         <div class="italic">To demonstrate tx functionality where account address is required.</div>
+        <div>Enter u64 account number of the account to create (address is derived from this)</div>
+        <div>(PDA seeds are ["someSeed", accountNumber])</div>
         <div>
-            <input type="text">
+            <input type="number" bind:value={updateAccountNumberInput} placeholder="Enter a u64 accountNumber"/>
         </div>
+
+        <div class="chunk">
+            <div>Function Parameters:</div>
+            <div>
+                someU32: <input type="number" bind:value={updateAccountU32Input} placeholder="Enter a u32">
+            </div>
+            <div>
+                someU64: <input type="number" bind:value={updateAccountU64Input} placeholder="Enter a u64">
+            </div>
+            <div>
+                someBool (must be "true" or TX will fail): 
+            <select bind:value={updateAccountBoolInput}>
+                <option value="1">true</option>
+                <option value="0">false</option>
+            </select>
+            </div>
+        </div>
+        <div>
+            <button disabled={$transacting} onclick={updateAccountClick}>Update Account</button>
+        </div>
+
+
+
     </div>
 
     <div class="chunk">
         <div class="bold">Create Two Accounts</div>
         <div class="italic">To demonstrate multi-ix transaction.</div>
+
+        <div>Enter two u64 account numbers of the accounts to create (addresses will be derived from these)</div>
+        <div>(PDA seeds are ["someSeed", accountNumber])</div>
         <div>
-            <input type="text">
+            <input type="number" bind:value={createTwoAccountsInput0} placeholder="Enter a u64 accountNumber"/>
+        </div>
+
+        <div>
+            <input type="number" bind:value={createTwoAccountsInput1} placeholder="Enter a u64 accountNumber"/>
+        </div>
+        <div>
+            <button disabled={$transacting} onclick={createTwoAccountsClick}>Create Account</button>
         </div>
     </div>
 {/if}

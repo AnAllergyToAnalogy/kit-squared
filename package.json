@@ -1,6 +1,6 @@
 {
 	"name": "kit-squared",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"description": "Solana Kit functionality with SvelteKit",
 	"license": "ISC",
 	"author": "AnAllergyToAnalogy",  

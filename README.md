@@ -172,19 +172,19 @@ Kit² uses BigInts for dealing with integers, and will be accepted for all integ
 
 However, since PDAs pack data in a very specific way when deriving the address, when adding integers as seeds for PDAs, use the following format:
 ```typescript
-[value, size_in_bits]
+[value, integer_type]
 ```
 
 so a `u16` with the value of `1234` would be passed as
 ```typescript
-[1234n,16n]
+[1234n,"u16"]
 ```
 
 _example_
 ```typescript
 // Your PDA seeds are "user" and then the index of the user as a u32, 
 //  and you want to get user 67
-const address = await myProgram.pda(["user",[67n, 32n]]);
+const address = await myProgram.pda(["user",[67n, "u32"]]);
 ```
 
 Full details available in the [PDA section of the docs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/PDAs.md).

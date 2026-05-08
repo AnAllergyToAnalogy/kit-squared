@@ -244,22 +244,15 @@ export async function disconnectWallet(){
     myKey = null;
     me.set(null);
 
-
     _setWalletState(INITIAL);
-
-    log("disconnected. triggering onWalletDisconnect")
     onWalletDisconnect.trigger();
-
-
 }
 
 import type { TransactionSendingSigner } from "@solana/signers";
 
 function _buildTransactionSendingSigner(_networkType: NetworkType ): TransactionSendingSigner{
 
-
     if(!connectedWalletAccount) throw new Error("connectedWalletAccount is null")
-    
 
     const signAndSendTransactionFeature = getWalletAccountFeature(
         connectedWalletAccount as UiWalletAccount,
@@ -294,8 +287,6 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
                     connectedWalletAccount,
                 );
 
-
-
             let chain: IdentifierString = `solana:${getNetworkType()}` as IdentifierString;
 
 
@@ -328,7 +319,7 @@ export function initialiseWallet() {
 
         if(!_selection || !_selection.wallet) throw new Error("Wallet selection is null");
 
-        // They just specified which wallet they are gonna use it didn't connect. Connect is done else where
+        // They just specified which wallet they are gonna use, it didn't connect. Connect is done else where
 
         // Connect wallet
         await connectWallet(_selection.wallet.uiWallet);
@@ -343,9 +334,7 @@ export function initialiseWallet() {
         // Update local storage
         storeWalletSelection(_selection.name as string);
 
-        log("trigger connect wallet")
         onWalletConnect.trigger();
-
     });
 
     initialWalletCheck();

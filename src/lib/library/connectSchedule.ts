@@ -1,6 +1,6 @@
-import {writable} from "svelte/store";
-import { onWalletConnect, onWalletDisconnect } from "./wallet.js";
-import { Event } from "./utils.js";
+import {get, writable} from "svelte/store";
+import { onWalletConnect, onWalletDisconnect, walletConnected } from "./wallet.js";
+import { Event, type Callback } from "./utils.js";
 
 export const connectIsScheduled = writable(false);
 export const disconnectIsScheduled = writable(false);
@@ -21,8 +21,21 @@ export function scheduleConnect(action: Action){
 }
 
 
-export const onConnect = Event();
+const onConnectEvent = Event();
 export const onDisconnect = Event();
+
+//Special case where onConnects fire when they are registeredd if its already connected
+export const onConnect = function(callback: Callback, fireImmediatelyIfAlreadyConnected: boolean = true){
+    // if(connected){
+    if(get(walletConnected) && fireImmediatelyIfAlreadyConnected){
+        callback();
+    }
+    return onConnectEvent(callback);
+}
+// export const onDisconnect = function(callback: Callback){
+//     if(disconnected)
+// }
+
 
 async function _checkSchedule(loopback = false){
 
@@ -36,7 +49,7 @@ async function _checkSchedule(loopback = false){
         disconnectIsScheduled.set(connectQueue.includes("disconnect"));
 
         if(next === "connect"){
-            await onConnect.trigger();
+            await onConnectEvent.trigger();
         }else if(next === "disconnect"){
             await onDisconnect.trigger();
         }
@@ -54,9 +67,7 @@ export function startConnectSchedule(){
     _checkSchedule();
 }
 
-console.log("register wallet connect")
 onWalletConnect(()=>{
-    console.log("bingo bango")
     scheduleConnect("connect");
 });
 onWalletDisconnect(()=>{

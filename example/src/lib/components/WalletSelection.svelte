@@ -1,32 +1,20 @@
 <script lang="ts">
-    // import { env } from '$env/dynamic/public';
-    // import { browser } from "$app/environment"
     import { onMount } from "svelte";
+    import { browser } from "$app/environment";
 
-    // This import is neede to keep the first ever load from calculating wallet state values in time
-    // import {walletState} from "./library/wallet.ts";
-    // walletState;
 
     import {
         selectWallet,
         getWalletInfo,
-        // visible,
-        // showPrompt,
-        // hidePrompt,
+
         availableWallets,
         unmountTeardown,
 
-        init
+    // } from "kit-squared";
+    } from "../../../../src/lib";
 
-    } from "kit-squared";
-    import { browser } from "$app/environment";
-    import { hidePrompt, showPrompt, visible } from "./walletSelectionComponent";
-
-
-    
-
-    // TODO: import initialise from wallet
-    //      -> this registers an onSelectWallet which is the thing that registers the wallet listeners and connects
+    import { hidePrompt, visible } from "./walletSelectionComponent";
+    import { uninitialise } from "$lib";
 
     function selectWalletClick(name: string){
         selectWallet(name);
@@ -39,9 +27,8 @@
 
     if(browser){
         onMount(()=>{
-
-            // this used to have startWalletFindCycle but pretty sure that isn't needed anymore
             return ()=>{
+                uninitialise();
                 unmountTeardown();
             }
         })
@@ -103,9 +90,9 @@
                             {#if availableWallets.length !== 0}
     
                                 {#each availableWallets as walletName}
-                                    <!-- <div class="class"> -->
+                                    <div class="class">
                                         <button onclick={() => selectWalletClick(walletName)} > {getWalletInfo(walletName)} </button>
-                                    <!-- </div> -->
+                                    </div>
                                 {/each}
 
                             {:else}
