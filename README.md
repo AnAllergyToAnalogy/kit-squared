@@ -4,8 +4,6 @@
 
  Kit² provides wallet connection, transaction functionality (including helpers) and features such as account management as well as program helpers (interfaces) for Anchor programs. It uses `@wallet-standard` for dealing with wallets.
 
-This library is in development, in a pre-release state. If you stumble across it and find any issues, please let me know via [GitHub](https://github.com/anallergyToAnalogy/kit-squared).
-
 [Skip to Contents](#contents)
 
 [Skip to Example Project](https://github.com/AnAllergyToAnalogy/kit-squared/tree/main/example)
