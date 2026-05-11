@@ -55,16 +55,30 @@
     <a href="https://github.com/AnAllergyToAnalogy/kit-squared">Kit²</a>. It interacts with a program deployed on Solana Devnet. That program has its own repo and is <a href="https://github.com/AnAllergyToAnalogy/kit-squared-example-program" target="_blank">available here</a>.
 </p>
 
+<p class="italic">
+    Note that this example implementation uses the free solana.com RPCs which may be subject to rate limits and other constraints.
+</p>
 
-<h2>Initialise</h2>
+
+<h2>Setup</h2>
+
+<h3>Install</h3>
+<div class="italic">Install the library</div>
+<textarea class="code">
+npm install kit-squared</textarea>
+
+<h3>Initialise</h3>
+<div class="italic">Init library, and create program helper for example anchor program</div>
 <textarea class="code">
 init(rpc_http,rpc_ws,"devnet");
 
 program = await createProgram(programClient,idl, signer);</textarea>
 
 
+<h2>Wallet</h2>
+
 <!-- <div > -->
-    <h2>Wallet Connection</h2>
+    <h3>Wallet Connection</h3>
     <textarea class="code">
 {"Wallet State: {$walletState}"}</textarea>
 
@@ -95,8 +109,19 @@ program = await createProgram(programClient,idl, signer);</textarea>
     <!-- </div> -->
 <!-- </div> -->
 
+<h3>Wallet Connection Events</h3>
+<div class="italic">
+    Register an event callback for when wallet connects or disconnects
+</div>
+<textarea class="code">
+{`onConnect(async ()=>{
+    console.log("wallet connected")
+)`}</textarea>
 
-    <h2>Read An Account</h2>
+
+<h2>Accounts</h2>
+
+    <h3>Read An Account</h3>
 
 
     <div class="italic">To demonstrate account reading functionality.</div>
@@ -160,7 +185,9 @@ await program.account.someAccount([
     </div>
 {:else}
 
-<h2>Transaction State</h2>
+<h2>Transactions</h2>
+
+<h3>Transaction State</h3>
 <div class="italic">The current transaction state.</div>
 <textarea class="code">
 {"Transaction State: {$transactionState}"}</textarea>
@@ -170,7 +197,7 @@ await program.account.someAccount([
 
 
 
-<h2>Execute createAccount tx</h2>
+<h3>Execute createAccount tx</h3>
 <div class="italic">To demonstrate tx functionality and events.</div>
 
 <textarea class="code">
@@ -185,7 +212,7 @@ await program.tx.createAccount(accountNumber);</textarea>
     <button disabled={$transacting} onclick={createAccountClick}>Execut Transaction</button>
 </div>
 
-<h2>Program Event</h2>
+<h3>Program Event</h3>
 <div class="italic">Register event callback for when a program event fires.</div>
 <textarea class="code">
 {`program.on("someEvent", (eventData: any,slotNumber: bigint,signature: string)=>{`} 
@@ -198,7 +225,7 @@ await program.tx.createAccount(accountNumber);</textarea>
     
 
 
-        <h2>Execute updateAccount tx</h2>
+        <h3>Execute updateAccount tx</h3>
         <div class="italic">To demonstrate tx functionality where account address is required.</div>
 
 <textarea class="code">
@@ -246,7 +273,7 @@ await program.tx.updateAccount(someU32, someU64, someBool);`}</textarea>
 
 
 
-<h2>Transaction Lifecycle Event</h2>
+<h3>Transaction Lifecycle Event</h3>
 <div class="italic">Register event callback for when TX fails.</div>
 <textarea class="code">
 {"onTransaction.fail((labels)=>{"}
@@ -255,7 +282,7 @@ await program.tx.updateAccount(someU32, someU64, someBool);`}</textarea>
 
 
 
-    <h2 >Execute two createAccount ixs</h2>
+    <h3>Execute two createAccount ixs</h3>
     <div class="italic">To demonstrate multi-ix transaction.</div>
 
 <textarea class="code">

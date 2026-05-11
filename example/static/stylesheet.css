@@ -76,6 +76,12 @@
         margin-bottom: 20px;
     }
     h2{
+        padding: 5px;
+        padding-left:15px;
+        background: rgb(233, 233, 233);
+        margin-top:50px;
+    }
+    h3{
         margin-top:20px;
         margin-bottom: 5px;
     }
