@@ -1,6 +1,3 @@
-
-let log = console.log;
-
 import { writable, derived } from "svelte/store";
 import {Event} from "./utils.js";
 import {getNetworkType} from "./connection.js";
@@ -113,24 +110,13 @@ function uiWalletAccountsAreSame(
 
 async function connectWallet(uiWallet: UiWallet){
 
-    // log("===---===---===")
-    // log("connect ui wallet", uiWallet);
-
     _setWalletState(CONNECTING);
-
-    // Get some sorta thing
     const wallet =
         getWalletForHandle_DO_NOT_USE_OR_YOU_WILL_BE_FIRED(uiWallet);
-
-    // log(2)
-    // log(wallet);
 
 
     // Accounts that are available?
     const existingAccounts = [...uiWallet.accounts];
-
-    // log(3)
-    // log(existingAccounts);
 
 
     // Do some stuff to get the ability to connect
@@ -138,10 +124,6 @@ async function connectWallet(uiWallet: UiWallet){
         uiWallet,
         StandardConnect,
     ) as StandardConnectFeature[typeof StandardConnect];
-
-    // log(4)
-    // log(connectFeature)
-
 
 
     // Wallet accounts for all the wallets in this connected one maybe
@@ -159,24 +141,12 @@ async function connectWallet(uiWallet: UiWallet){
         });
 
 
-    // log(5)
-    // log(accountsPromise);
-
-    // I don't know whhy this is called nextAccounts. Some other layer of wallet type.
     const nextAccounts = await accountsPromise;
-    // console.log("next accounts", nextAccounts);
-
-
-    // log(6)
-    // log(nextAccounts)
 
 
     // Just set connectedWallet
     connectedWallet = uiWallet;
     hasConnectedWallet.set(true);
-
-
-    //TODO: not sure what this is doing
 
     // Try to choose the first never-before-seen account. Gonna assume this is the right move for now
     for (const nextAccount of nextAccounts) {
@@ -185,32 +155,18 @@ async function connectWallet(uiWallet: UiWallet){
                 uiWalletAccountsAreSame(nextAccount, existingAccount),
             )
         ) {
-            // onAccountSelect(nextAccount);
-            // console.error("Found not seen account, set as connectedWalletAccount");
             connectedWalletAccount = nextAccount;
             hasConnectedWalletAccount.set(true);
             _setWalletState(CONNECTED);
 
-            // localStorage.setItem(
-            //     STORAGE_KEY,
-            //     `${wallet.name}:${connectedWalletAccount.address}`,
-            // );
-            // console.log("compare accounts", connectedWalletAccount);
             return;
         }
     }
     if (nextAccounts.length > 0) {
-        // onAccountSelect(nextAccounts[0]);
-        // console.error("Fallback to just using the first one available")
         connectedWalletAccount = nextAccounts[0];
         hasConnectedWalletAccount.set(true);
         _setWalletState(CONNECTED);
 
-        // localStorage.setItem(
-        //     STORAGE_KEY,
-        //     `${wallet.name}:${connectedWalletAccount.address}`,
-        // );
-        // console.log("default accounts", connectedWalletAccount);
         return
     }
 
@@ -219,7 +175,6 @@ async function connectWallet(uiWallet: UiWallet){
 }
 
 export async function disconnectWallet(){
-    log("disconnect wallet..")
     clearStoredWalletSelection();
     clearSelectedVars();
 

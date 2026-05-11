@@ -41,3 +41,7 @@ Note the additional line in [`app.html`](./src/app.html),
 It is needed because the Codama-generated anchor program clients make direct reference to `process.env["NODE_ENV"]` which is not how environment ariables are accessed within svelte.
 
 The above is a hacky way of reventing this from breaking program client imports, but will be patched and improved in a later version of this library.
+
+### Example Program Repo
+
+This example interacts with an anchor program deployed to Devnet. That program is [available here](https://github.com/AnAllergyToAnalogy/kit-squared-example-program).

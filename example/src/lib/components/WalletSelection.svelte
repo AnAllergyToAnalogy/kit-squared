@@ -39,6 +39,8 @@
 <!-- TODO: De-stye -->
 
 <style>
+
+
     #walletSelectionArea{
         position: fixed;
         top:0;
@@ -58,13 +60,16 @@
         /* width: 100%;
         height: 75%; */
 
-        background: black;
-        color:white;
+        background: white;
+        color:black;
 
-        outline: solid 5px white;
+        outline: solid 5px black;
         padding: 10px;
 
-        max-width: calc(100cw - 25px);
+        max-width: calc(100vw - 100px);
+        width: 400px;
+
+        padding:30px;
     }
 
     h2{
@@ -83,12 +88,16 @@
             <div class="walletSelection">
 
                     <div class="cc">
-                        <h3>Select a wallet to connect</h3>
+                        <h2>Select a wallet to connect</h2>
 
                         <div class="wallets cc">
                             {#if availableWallets.length !== 0}
     
                                 {#each availableWallets as walletName}
+
+<textarea class="code">
+{`onclick={selectWallet(${walletName})}`}</textarea>
+
                                     <div class="class">
                                         <button onclick={() => selectWalletClick(walletName)} > {getWalletInfo(walletName)} </button>
                                     </div>
@@ -100,7 +109,10 @@
                             {/if}
                         </div>
 
-                        <button onclick={cancelClick}  > Cancel </button>
+                        <div class="centre">
+                            <button onclick={cancelClick} class="cancel"  > Cancel </button>
+                        </div>
+
                     </div>
 
 

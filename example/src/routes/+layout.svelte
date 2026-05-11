@@ -8,7 +8,7 @@
 	// 	//@ts-ignore
 	// 	window.process = process;
 	// }
-	import favicon from '$lib/assets/favicon.svg';
+	import favicon from '$lib/assets/favicon.ico';
 
 	import WalletSelection from '$lib/components/WalletSelection.svelte';
 		
@@ -17,6 +17,9 @@
 
 
 </script>
+
+
+
 
 <svelte:head>
 	<link rel="icon" href={favicon} />

@@ -14,6 +14,8 @@ import {
     onConnect,
     onDisconnect,
    
+    onTransaction,
+   
     signer,
     transact,
 } from "kit-squared";
@@ -34,8 +36,6 @@ function registerEvents(){
         if(isMe(someKey)){
             alert(`You created an account. someU64: ${someU64}`);
         }
-        
-
     });
     
     program.on("someOtherEvent", (eventData: any,slotNumber: bigint,signature: string)=>{
@@ -82,6 +82,11 @@ async function initialise(){
         registerEvents();
 
     });
+
+
+    onTransaction.fail((labels)=>{
+        alert(`Transaction faied: ${labels.join(", ")}`);
+    })
 
 
     // Read account 0 at startup
@@ -161,12 +166,10 @@ export async function updateAccount(accountNumber: any, someU32: any, someU64: a
             [BigInt(accountNumber), "u64"]
         ]
     );
-
     // Add the account to update since it can't be inferred by params
     addAccounts({
         toUpdate: accountAddress
     });
-
     // Do the tx
     await program.tx.updateAccount(someU32, someU64, someBool);
 }

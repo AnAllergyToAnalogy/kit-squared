@@ -1,8 +1,10 @@
 <script lang="ts">
-    import { disconnectWallet, transacting, walletConnected, walletInitial, walletState } from "kit-squared";
+    import { disconnectWallet, transacting, transactionState, walletConnected, walletInitial, walletState } from "kit-squared";
 
     import { createAccount, createTwoAccounts, readAccountAndUpdateStore, readAccountData, updateAccount } from "$lib";
     import { requestAndConnectWallet } from "$lib/components/walletSelectionComponent";
+
+        import LOGO from "$lib/assets/kit-squared-logo-transparent.png";
 
     
 // Read Account
@@ -38,54 +40,91 @@
 </script>
 
 <style>
-    .bold{
-        font-weight: bold;
-    }
-    .chunk{
-        padding: 20px;
-    }
-    .italic{
-        font-style: italic;
-        color: #666;
-    }
+
 </style>
 
+<div class="main">
+<div class="inner">
+
+
+<img src="{LOGO}" alt="Kit Squared Logo" class="logo">
 <h1>Kit² Example Repo</h1>
+
 <p>
     This repo shows a basic implementation of 
-    <a href="https://github.com/AnAllergyToAnalogy/kit-squared">Kit²</a>
-    . It interacts with a program deployed on Solana Devnet. That program has its own repo and is <a href="https://github.com/AnAllergyToAnalogy/kit-squared-example-program" target="_blank">available here</a>.
+    <a href="https://github.com/AnAllergyToAnalogy/kit-squared">Kit²</a>. It interacts with a program deployed on Solana Devnet. That program has its own repo and is <a href="https://github.com/AnAllergyToAnalogy/kit-squared-example-program" target="_blank">available here</a>.
 </p>
 
 
-<div class="chunk">
-    <div class="bold">Wallet Connection</div>
+<h2>Initialise</h2>
+<textarea class="code">
+init(rpc_http,rpc_ws,"devnet");
+
+program = await createProgram(programClient,idl, signer);</textarea>
+
+
+<!-- <div > -->
+    <h2>Wallet Connection</h2>
+    <textarea class="code">
+{"Wallet State: {$walletState}"}</textarea>
+
+
     <div>
-        State: {$walletState}
+        Wallet State: {$walletState}
     </div>
-    <div>
+
+    <br/>
         {#if $walletInitial}
+        <div class="centre">
+
             <button onclick={requestAndConnectWallet}>Connect Wallet</button>
+            </div>
+
         {:else if $walletConnected}
+
+<textarea class="code">
+{"onclick={disconnectWallet}"}</textarea>
+
+
+<div class="centre">
             <button onclick={disconnectWallet}>Disconnect Wallet</button>
+</div>
         {:else}
             &nbsp;
         {/if}
-    </div>
-</div>
+    <!-- </div> -->
+<!-- </div> -->
 
 
+    <h2>Read An Account</h2>
 
-<div class="chunk">
-    <div class="bold">Read An Account</div>
+
     <div class="italic">To demonstrate account reading functionality.</div>
-    <div>Enter u64 account number</div>
-    <div>(PDA seeds are ["someSeed", accountNumber])</div>
+
+<textarea class="code">
+const accountAddress = await program.pda(   
+    [
+        "someSeed",
+        [accountNumber, "u64"]
+    ]
+);
+await program.account.someAccount(accountAddress);
+
+//Or pass the seeds directly
+
+await program.account.someAccount([
+    "someSeed",
+    [accountNumber, "u64"]
+]);</textarea>
+
+
+    <div class="instruction">Enter u64 account number</div>
+    <div class="instruction">(PDA seeds are ["someSeed", accountNumber])</div>
     <div>
         <input type="number" bind:value={readAccountInput} placeholder="Enter a u64 accountNumber"/>
     </div>
-    <div>
-        <button onclick={readAccountClick}> Read Account </button>
+    <div class="centre">
+            <button onclick={readAccountClick}> Read Account </button>
     </div>
 
     <div class="chunk">
@@ -114,38 +153,79 @@
 
 
     </div>
-</div>
 
 {#if !$walletConnected}
-    <div>
-        Connect wallet to execute transactions
+    <div class="instruction centre">
+        Connect wallet to execute transactions.
     </div>
 {:else}
-    <div class="chunk">
-        <div class="bold">Create An Account</div>
-        <div class="italic">To demonstrate tx functionality and events.</div>
-        <div>Enter u64 account number of the account to create</div>
-        <div>(PDA seeds are ["someSeed", accountNumber])</div>
-        <div>
-            <input type="number" bind:value={createAccountInput} placeholder="Enter a u64 accountNumber"/>
-        </div>
-        <div>
-            <button disabled={$transacting} onclick={createAccountClick}>Create Account</button>
-        </div>
 
-    </div>
+<h2>Transaction State</h2>
+<div class="italic">The current transaction state.</div>
+<textarea class="code">
+{"Transaction State: {$transactionState}"}</textarea>
+<div>
+    Transaction State: {$transactionState}
+</div>
 
-    <div class="chunk">
-        <div class="bold">Update An Account</div>
+
+
+<h2>Execute createAccount tx</h2>
+<div class="italic">To demonstrate tx functionality and events.</div>
+
+<textarea class="code">
+await program.tx.createAccount(accountNumber);</textarea>
+
+<div class="instruction">Enter u64 account number of the account to create</div>
+<div class="instruction">(PDA seeds are ["someSeed", accountNumber])</div>
+<div>
+    <input type="number" bind:value={createAccountInput} placeholder="Enter a u64 accountNumber"/>
+</div>
+<div class="centre">
+    <button disabled={$transacting} onclick={createAccountClick}>Execut Transaction</button>
+</div>
+
+<h2>Program Event</h2>
+<div class="italic">Register event callback for when a program event fires.</div>
+<textarea class="code">
+{`program.on("someEvent", (eventData: any,slotNumber: bigint,signature: string)=>{`} 
+    {`const {someKey, someU64} = eventData;`}
+    {`if(isMe(someKey)){ `} 
+        {`alert(\`You created an account. someU64: \${someU64}\`);`} 
+    {`}`}
+{`});`}</textarea>
+
+    
+
+
+        <h2>Execute updateAccount tx</h2>
         <div class="italic">To demonstrate tx functionality where account address is required.</div>
-        <div>Enter u64 account number of the account to create (address is derived from this)</div>
-        <div>(PDA seeds are ["someSeed", accountNumber])</div>
+
+<textarea class="code">
+{`const accountAddress = await program.pda(
+    [
+        "someSeed",
+        [BigInt(accountNumber), "u64"]
+    ]
+);
+
+// Add the account to update since it can't be inferred by params
+addAccounts({
+    toUpdate: accountAddress
+});
+
+// Do the tx
+await program.tx.updateAccount(someU32, someU64, someBool);`}</textarea>
+
+
+        <div class="instruction">Enter u64 account number of the account to create (address is derived from this)</div>
+        <div class="instruction">(PDA seeds are ["someSeed", accountNumber])</div>
         <div>
             <input type="number" bind:value={updateAccountNumberInput} placeholder="Enter a u64 accountNumber"/>
         </div>
 
         <div class="chunk">
-            <div>Function Parameters:</div>
+            <div class="instruction">Function Parameters:</div>
             <div>
                 someU32: <input type="number" bind:value={updateAccountU32Input} placeholder="Enter a u32">
             </div>
@@ -160,29 +240,45 @@
             </select>
             </div>
         </div>
-        <div>
-            <button disabled={$transacting} onclick={updateAccountClick}>Update Account</button>
+        <div class="centre">
+            <button disabled={$transacting} onclick={updateAccountClick}>Execut Transaction</button>
         </div>
 
 
 
+<h2>Transaction Lifecycle Event</h2>
+<div class="italic">Register event callback for when TX fails.</div>
+<textarea class="code">
+{"onTransaction.fail((labels)=>{"}
+    {'alert(`Transaction faied: ${labels.join(", ")}`);'}
+{"})" }</textarea>
+
+
+
+    <h2 >Execute two createAccount ixs</h2>
+    <div class="italic">To demonstrate multi-ix transaction.</div>
+
+<textarea class="code">
+// Build the IXs
+const ix0 =  await program.ix.createAccount(accountNumber0);
+const ix1 =  await program.ix.createAccount(accountNumber1);
+
+// Send TX
+await transact([ix0,ix1])</textarea>
+
+    <div class="instruction">Enter two u64 account numbers of the accounts to create (addresses will be derived from these)</div>
+    <div class="instruction">(PDA seeds are ["someSeed", accountNumber])</div>
+    <div>
+        <input type="number" bind:value={createTwoAccountsInput0} placeholder="Enter a u64 accountNumber"/>
     </div>
 
-    <div class="chunk">
-        <div class="bold">Create Two Accounts</div>
-        <div class="italic">To demonstrate multi-ix transaction.</div>
-
-        <div>Enter two u64 account numbers of the accounts to create (addresses will be derived from these)</div>
-        <div>(PDA seeds are ["someSeed", accountNumber])</div>
-        <div>
-            <input type="number" bind:value={createTwoAccountsInput0} placeholder="Enter a u64 accountNumber"/>
-        </div>
-
-        <div>
-            <input type="number" bind:value={createTwoAccountsInput1} placeholder="Enter a u64 accountNumber"/>
-        </div>
-        <div>
-            <button disabled={$transacting} onclick={createTwoAccountsClick}>Create Account</button>
-        </div>
+    <div>
+        <input type="number" bind:value={createTwoAccountsInput1} placeholder="Enter a u64 accountNumber"/>
+    </div>
+    <div class="centre">
+        <button disabled={$transacting} onclick={createTwoAccountsClick}>Execute Transaction</button>
     </div>
 {/if}
+
+</div>
+</div> 
