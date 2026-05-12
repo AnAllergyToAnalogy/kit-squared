@@ -2,6 +2,9 @@
 
 Example usage of Kit². This shows wallet connectivity, reading accounts and sending various txs. It interacts with a program deployed on Solana Devnet. That program has its own repo and is [available here](https://github.com/AnAllergyToAnalogy/kit-squared-example-program).
 
+This example is live at [https://example.kitsquared.xyz](https://example.kitsquared.xyz).
+
+
 ## Install
 
 ```
