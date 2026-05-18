@@ -46,7 +46,7 @@ export function isNumberType(type: string){
 //     return e;
 // })();
 export const typeEncoder = (()=>{
-    const types =  ["Address","f32","f64"];
+    const types =  ["Address","F32","F64"];
 
     for(let i = 0; i < 5; i++){
         const s = 8 * (2 ** i);
