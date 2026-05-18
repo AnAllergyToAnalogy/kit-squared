@@ -1,5 +1,5 @@
 import { writable } from "svelte/store";
-import {camelToSnake, snakeToCamel, camelToPascal, snakeToPascal, getPDA, pascalToCamel, sleep, type EventType, type Callback} from "./utils.js";
+import {camelToSnake, snakeToCamel, camelToPascal, snakeToPascal, getPDA, pascalToCamel, sleep, type EventType, type Callback, isIntegerType} from "./utils.js";
 import {Event} from "./utils.js";
 import {signer} from "./wallet.js";
 import {getConnection} from "./connection.js";
@@ -238,6 +238,31 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
         }
         return null;
     }
+
+    function _eventParamIsIntegerType(eventName_PascalCase: string, paramName_snakeCase: string): boolean{
+
+        const types = idl.types;
+
+        for(let i = 0; i < types.length; i++){
+            if(types[i].name === eventName_PascalCase){
+                // found event
+
+                const fields = types[i].fields;
+                for(let j = 0; j < fields.length; j++){
+                    const field = fields[j];
+
+                    if(field.name === paramName_snakeCase){
+                        return isIntegerType(field.type);
+                    }
+                }
+
+                break;
+            }
+        }
+
+        return false;
+    }
+
     function _parseNotification(notification: ProgramNotification){
         // slot: notification.context.slot : bigInt
         // signature: notification.value.signature : string (big sig)
@@ -267,10 +292,16 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
                 // TODO: better integer parsing than just assuming numbers should be integers
                 for(let v in decoded){
                     if(typeof decoded[v] === "number"){
-                        decoded[v] = BigInt(decoded[v]);
+                        if (_eventParamIsIntegerType(name, camelToSnake(v))){
+                            //numeric type is integer
+                            decoded[v] = BigInt(decoded[v]);
+                        }else{
+                            // numberic type is float
+                            // leave it as a number
+                            // decoded[v] = decoded[v];
+                        }
                     }
                 }
-
 
                 _eventTranslation[name].trigger(decoded, slot, signature)
             }else{
@@ -310,7 +341,7 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
             const values = codec.decode(account.data);
             for(let v in values){
                 if(typeof values[v] === "number"){
-                    values[v] = BigInt(values[v]);
+                    values[v] =  String(values[v]);// BigInt(values[v]);
                 }
             }
             return values;
