@@ -23,16 +23,19 @@ _example:_
     const somePDA = await someHelper.pda(["user", address("abcd...")]);
 ```
 
-## Integers
-When adding integers as seeds for PDAs, use the following format:
+## Numbers
+When adding numbers as seeds for PDAs, use the following format:
 ```typescript
-[value, size_in_bits]
+[value, type]
 ```
 
 so a `u16` with the value of `1234` would be passed as
 ```typescript
 [1234n,"u16"]
 ```
+
+Works for all integer types, as well as `f32` and `f64`.
+
 
 _example_
 ```typescript

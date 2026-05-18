@@ -13,12 +13,20 @@ Takes an integer type string (`u8`,`u16`,`i8`, etc.) and returns the number of b
 
 ## Is Integer Type
 ```typescript
-function isIntergerType(type: string | null): boolean
+function isIntegerType(type: string | null): boolean
 ```
 Takes a string and returns `true` if its an integer type string (`u8`,`u16`,`i8`, etc.).
 
+## Is Number Type
+```typescript
+function isNumberType(type: string | null): boolean
+```
+Takes a string and returns `true` if its `f32`, `f64`, or an integer type string.
+
+
+
 ## `typeEncoder`
-An object that just points to `@solana/kit` type encoders for integer types and the `address` type.
+An object that just points to `@solana/kit` type encoders for numeric types and the `address` type.
 
 _example:_
 ```typescript

@@ -164,13 +164,13 @@ clearAddedAccounts()
 Full details available in the [Accounts section of the docs]( https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/ACCOUNTS.md).
 
 
-## Integer types and PDAs
+## Number types and PDAs
 
 Kit² uses BigInts for dealing with integers, and will be accepted for all integer function params, and be used in all returned integer values. 
 
-However, since PDAs pack data in a very specific way when deriving the address, when adding integers as seeds for PDAs, use the following format:
+However, since PDAs pack data in a very specific way when deriving the address, when adding integers or floats as seeds for PDAs, use the following format:
 ```typescript
-[value, integer_type]
+[value, number_type]
 ```
 
 so a `u16` with the value of `1234` would be passed as

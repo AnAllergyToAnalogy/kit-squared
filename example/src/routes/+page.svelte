@@ -208,7 +208,7 @@ await program.tx.createAccount(accountNumber);</textarea>
     <input type="number" bind:value={createAccountInput} placeholder="Enter a u64 accountNumber"/>
 </div>
 <div class="centre">
-    <button disabled={$transacting} onclick={createAccountClick}>Execut Transaction</button>
+    <button disabled={$transacting} onclick={createAccountClick}>Execute Transaction</button>
 </div>
 
 <h3>Program Event</h3>
@@ -267,7 +267,7 @@ await program.tx.updateAccount(someU32, someU64, someBool);`}</textarea>
             </div>
         </div>
         <div class="centre">
-            <button disabled={$transacting} onclick={updateAccountClick}>Execut Transaction</button>
+            <button disabled={$transacting} onclick={updateAccountClick}>Execute Transaction</button>
         </div>
 
 
