@@ -4,8 +4,7 @@
     import { createAccount, createTwoAccounts, readAccountAndUpdateStore, readAccountData, updateAccount } from "$lib";
     import { requestAndConnectWallet } from "$lib/components/walletSelectionComponent";
 
-        import LOGO from "$lib/assets/kit-squared-logo-transparent.png";
-
+    import LOGO from "$lib/assets/kit-squared-logo-transparent.png";
     
 // Read Account
     let readAccountInput = $state(0);

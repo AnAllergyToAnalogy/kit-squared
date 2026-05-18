@@ -10,7 +10,7 @@ export const ZERO_ADDRESS = "11111111111111111111111111111111";
 export function integerTypeToSize(type: string){
     return type.substring(1);
 }
-export function isIntergerType(type: string){
+export function isIntegerType(type: string){
     const types = ["isize","usize"];
     for(let i = 0; i < 8; i++){
         const s = 8 * (2 ** i);
@@ -18,6 +18,10 @@ export function isIntergerType(type: string){
         types.push("i"+s);
     }
     return types.includes(type);
+}
+export function isNumberType(type: string){
+    const types = ["f32","f64"];
+    return types.includes(type) || isIntegerType(type);
 }
 
 
@@ -42,7 +46,7 @@ export function isIntergerType(type: string){
 //     return e;
 // })();
 export const typeEncoder = (()=>{
-    const types =  ["Address"];
+    const types =  ["Address","f32","f64"];
 
     for(let i = 0; i < 5; i++){
         const s = 8 * (2 ** i);
@@ -191,8 +195,8 @@ export async function getPDA(seeds: any[], programId: Address){
             }
             const value = seed[0];
             const t = seed[1];
-            if(!isIntergerType(t)){
-                throw new Error("Not an integer type: "+t);
+            if(!isNumberType(t)){
+                throw new Error("Not a valid number type: "+t);
             }
 
             seeds_parsed.push(typeEncoder[t].encode(value));

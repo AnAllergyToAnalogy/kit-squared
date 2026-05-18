@@ -36,10 +36,7 @@
 
 </script>
 
-<!-- TODO: De-stye -->
-
 <style>
-
 
     #walletSelectionArea{
         position: fixed;

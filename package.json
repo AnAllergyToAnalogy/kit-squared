@@ -3,7 +3,7 @@
 	"version": "0.1.3",
 	"description": "Solana Kit functionality with SvelteKit",
 	"license": "ISC",
-	"author": "AnAllergyToAnalogy",  
+	"author": "AnAllergyToAnalogy",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build && npm run prepack",
@@ -62,7 +62,6 @@
 		"@wallet-standard/base": "^1.1.0",
 		"@wallet-standard/features": "^1.1.0",
 		"@wallet-standard/ui": "^1.0.1",
-		"@wallet-standard/ui-registry": "^1.0.1",
-		"buffer": "^6.0.3"
+		"@wallet-standard/ui-registry": "^1.0.1"
 	}
 }
