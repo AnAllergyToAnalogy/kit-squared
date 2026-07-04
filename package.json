@@ -43,7 +43,7 @@
 		"publint": "^0.3.18",
 		"svelte": "^5.55.2",
 		"svelte-check": "^4.4.6",
-		"typescript": "^6.0.2",
+		"typescript": "^6.0.3",
 		"vite": "^8.0.7"
 	},
 	"keywords": [
@@ -51,8 +51,9 @@
 		"solana"
 	],
 	"dependencies": {
-		"@solana/keys": "^6.8.0",
-		"@solana/kit": "^6.8.0",
+		"@solana-program/token": "^0.14.0",
+		"@solana/keys": "^6.10.0",
+		"@solana/kit": "^6.10.0",
 		"@solana/promises": "^6.8.0",
 		"@solana/signers": "^6.8.0",
 		"@solana/transaction-confirmation": "^6.8.0",

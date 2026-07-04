@@ -26,3 +26,5 @@ vite.config.ts.timestamp-*
 .vscode
 
 /example2
+/check
+/check2
