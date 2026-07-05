@@ -1,11 +1,11 @@
 <script lang="ts">
     import { disconnectWallet, transacting, transactionState, walletConnected, walletInitial, walletState } from "kit-squared";
 
-    import { createAccount, createTwoAccounts, readAccountAndUpdateStore, readAccountData, updateAccount } from "$lib";
+    import { createAccount, createTwoAccounts, readAccountAndUpdateStore, readAccountData, readAndUpdateTokenBalance, tokenBalance, updateAccount } from "$lib";
     import { requestAndConnectWallet } from "$lib/components/walletSelectionComponent";
 
     import LOGO from "$lib/assets/kit-squared-logo-transparent.png";
-    
+
 // Read Account
     let readAccountInput = $state(0);
     function readAccountClick(){
@@ -35,6 +35,22 @@
         
          createTwoAccounts(createTwoAccountsInput0,createTwoAccountsInput1);
     }
+
+
+// Token Balance
+
+    const DEFAULT_TOKEN_MINT = "62FSCknJURBW7xPCvwWa9rFJUBkaAvW15kbS6RYN6FZA";
+    const DEFAULT_OWNER_ACCOUNT = "6dHCv4oJ1qkA2wsEUnR6N7BnE5iY9c3QeFVz491Jnf5j";
+    // const DEFAULT_OWNER_ACCOUNT = "GJhtRUcK2QDfJvC7xmxCXy6ZiJZQKB8CBT8bgWnTC5h3";
+
+    let tokenMintInput = $state(DEFAULT_TOKEN_MINT);
+    let ownerAddressInput = $state(DEFAULT_OWNER_ACCOUNT);
+    let tokenStandardInput = $state('token');
+
+    function getTokenBalanceClick(){
+        readAndUpdateTokenBalance(tokenMintInput, ownerAddressInput, tokenStandardInput);
+    }
+
 
 </script>
 
@@ -305,6 +321,71 @@ await transact([ix0,ix1])</textarea>
         <button disabled={$transacting} onclick={createTwoAccountsClick}>Execute Transaction</button>
     </div>
 {/if}
+
+
+<h2>Token Programs</h2>
+<div class="italic">The library requires no additional features or functionality for interacting with tokens. The <a href="https://www.npmjs.com/package/@solana-program/token" target="_blank">@solana-program/token</a> package may be used for these purposes. </div>
+
+<div class="italic mt20">
+    The <a href="https://www.npmjs.com/package/@solana-program/token-2022" target="_blank">@solana-program/token-2022</a> package will be supported after its next release. It currently has outdated peer dependencies that I have patched with a PR. These are slow moving wheels beyond my control.
+</div>
+
+<textarea class="code mt20">
+{`//Get your RPC url from the initialised Kit² library. 
+
+const rpc = (getConnection()).rpc;
+
+// ====
+// NOTE:  The rest is just standard @solana-program/token syntax
+// ====
+
+// Get the ATA
+
+const [tokenAccountAddress] = await findAssociatedTokenPda({
+    mint: theMintAddress,
+    owner: theOwnerAddress,
+    tokenProgram: TOKEN_PROGRAM_ADDRESS
+}) 
+
+
+// Fetch the token data, use the RPC url from above
+
+const data = await fetchToken(rpc, tokenAccountAddress );
+
+
+// The Token Balance
+
+const balance = data.data.amount;`}
+</textarea>
+<div class="instruction">Fetch token balance of a token account</div>
+<div>
+    Mint address: <input type="string" bind:value={tokenMintInput} placeholder="Enter the token mint address"/>
+</div>
+<div>
+    Owner address: <input type="string" bind:value={ownerAddressInput} placeholder="Enter the owner address"/>
+</div>
+<div>
+    Token program: <select bind:value={tokenStandardInput}>
+        <!-- <option value="token-2022">Token-2022</option> -->
+        <option value="token">Original flavour</option>
+    </select> 
+</div>
+<div>
+
+</div>
+
+<div class="centre">
+    <button onclick={getTokenBalanceClick}>Get Token Balance</button>
+</div>
+
+<div>
+    {#if $tokenBalance}
+        Balance: {$tokenBalance}
+    {/if}
+</div>
+
+
+
 
 </div>
 </div> 

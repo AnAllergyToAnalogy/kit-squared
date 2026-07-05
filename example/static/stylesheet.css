@@ -99,6 +99,16 @@
         width: 50%;
         min-width: 100px;
     }
+
+    select{
+        margin-top:5px;
+        border-radius: 10px;
+        padding: 5px;
+
+        /* width: 50%; */
+        min-width: 100px;
+    }
+
     button{
         /* justify-self: center; */
         border-radius: 15px;
@@ -144,4 +154,9 @@
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+
+    .mt20 {
+        margin-top:20px;
     }

@@ -188,6 +188,25 @@ const address = await myProgram.pda(["user",[67n, "u32"]]);
 Full details available in the [PDA section of the docs](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/PDAs.md).
 
 
+## SPL Tokens
+
+The library requires no additional features or functionality for interacting with tokens. The [@solana-program/token](https://www.npmjs.com/package/@solana-program/token) package may be used for these purposes.
+
+The [@solana-program/token-2022](https://www.npmjs.com/package/@solana-program/token-2022) package will be supported after its next release. It currently has outdated peer dependencies that I have patched with a PR. These are slow moving wheels beyond my control.
+
+You can retreive the RPC of your Kit2 instance with
+```typescript
+const rpc = (getConnection()).rpc;
+```
+
+Then follow the token [exmaples in the Solana cookbook](https://solana.com/developers/cookbook/tokens/get-token-account), using `@solana-program/token`.
+
+
+
+
+
+
+
 # Contents
 
 ### [Initialisation](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/framework/INITIALISATION.md)

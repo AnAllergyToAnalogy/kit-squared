@@ -9,7 +9,7 @@ import * as programClient from "$lib/config/exampleProgram/src/generated";
 import {
     addAccounts,
     clearAddedAccounts,
-    createProgram,    init,
+    createProgram,    getConnection,    init,
     isMe,
     onConnect,
     onDisconnect,
@@ -19,6 +19,8 @@ import {
     signer,
     transact,
 } from "kit-squared";
+import { address } from "@solana/kit";
+import { fetchToken, findAssociatedTokenPda, TOKEN_PROGRAM_ADDRESS } from "@solana-program/token";
 
 
 // Use free RPCs
@@ -204,5 +206,42 @@ export async function createTwoAccounts(accountNumber0: any, accountNumber1: any
 
     // Send TX
     await transact([ix0,ix1])
+
+}
+
+
+
+// Token Programs
+// Store with data to be displayed
+export const tokenBalance: Writable<null | bigint | string> = writable(null);
+
+// Function that uses @solana-program/token-2022 to determine ATA and fetch account balance
+export async function readAndUpdateTokenBalance(tokenMintInput: string, ownerAddressInput: string, tokenStandardName: string){
+
+    tokenBalance.set("...");
+
+    try{
+        const tokenMint = address(tokenMintInput);
+        const ownerAddress = address(ownerAddressInput);
+
+        // const tokenStandard = tokenStandardName === "token-2022" ? TOKEN_2022_PROGRAM_ADDRESS : TOKEN_PROGRAM_ADDRESS;
+        const tokenStandard =  TOKEN_PROGRAM_ADDRESS;
+
+        const rpc = ( getConnection()).rpc;
+
+        const [tokenAccountAddress] = await findAssociatedTokenPda({
+            mint: tokenMint,
+            owner: ownerAddress,
+            tokenProgram: tokenStandard
+        }) 
+
+        const data = await fetchToken(rpc, tokenAccountAddress );
+        const balance = data.data.amount;
+
+        tokenBalance.set(balance.toLocaleString());
+    }catch(e){
+        console.log(e);
+        tokenBalance.set("Error reading token balance.")
+    }
 
 }
