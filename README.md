@@ -6,7 +6,7 @@
 
 [Skip to Contents](#contents)
 
-[Skip to Example Project](https://github.com/AnAllergyToAnalogy/kit-squared/tree/main/example)
+[Skip to Example Project](https://github.com/AnAllergyToAnalogy/kit-squared-example-site/tree/main/src)
 
  ## Initialising
 
@@ -227,5 +227,5 @@ Managing accounts included in instructions and transactions.
 ### [Utils](https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/docs/utils/UTILS.md)
 Various utilities, some relating specific to Solana, others that are more broadly used by this library.
 
-### [Example](https://github.com/AnAllergyToAnalogy/kit-squared/tree/main/example)
+### [Example](https://github.com/AnAllergyToAnalogy/kit-squared-example-site/tree/main/src)
 An example repo showing basic usage of the Kit² library.
