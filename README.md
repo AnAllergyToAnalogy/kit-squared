@@ -194,7 +194,7 @@ The library requires no additional features or functionality for interacting wit
 
 The [@solana-program/token-2022](https://www.npmjs.com/package/@solana-program/token-2022) package will be supported after its next release. It currently has outdated peer dependencies that I have patched with a PR. These are slow moving wheels beyond my control.
 
-You can retreive the RPC of your Kit2 instance with
+You can retreive the RPC of your Kit² instance with
 ```typescript
 const rpc = (getConnection()).rpc;
 ```
