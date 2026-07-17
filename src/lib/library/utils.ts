@@ -340,7 +340,7 @@ export function parseSeconds(time: bigint){
     let parsed = p(hours)+":"+p(minutes)+":"+p(seconds);
 
     if(days){
-        parsed = p(days)+parsed;
+        parsed = p(days)+":"+parsed;
     }
 
     return parsed;
