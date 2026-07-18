@@ -177,15 +177,18 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
         discriminator: [],
         codec: Codec<Function>
     }} = {};
-    for(let event of idl.events){
-        const nameCamel = pascalToCamel(event.name);
-        _events[event.name] = {
-            name: nameCamel,
-            discriminator: event.discriminator,
-            codec: programClient[`get${event.name}Codec`](),
-        }
 
-        _eventTranslation[nameCamel] = Event();
+    if(idl.events){
+        for(let event of idl.events){
+            const nameCamel = pascalToCamel(event.name);
+            _events[event.name] = {
+                name: nameCamel,
+                discriminator: event.discriminator,
+                codec: programClient[`get${event.name}Codec`](),
+            }
+
+            _eventTranslation[nameCamel] = Event();
+        }
     }
     // Set up an abort controller.
     const abortController = new AbortController();
@@ -394,6 +397,7 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
         // Iterate through accounts and add them as possible. Save PDAs for last in case they are derived from other
         //  accounts.
         const accounts = instruction.accounts;
+    
         for(let account of accounts){
             const name = account.name;
             const nameCamel = snakeToCamel(name);
@@ -459,8 +463,10 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
                                     // use [property] of that.
                                     // Will need to infer type from the account
                                     const accountData = await readAccount(seed.account, ixProps[parentName]);
+
+                                    const propertyCamel = snakeToCamel(property);
                                     if(!accountData) throw new Error(`Unable to read account relating to ${seed.account}: ${ixProps[parentName]}`);
-                                    const value = accountData[property];
+                                    const value = accountData[propertyCamel];
 
                                     const propertyType = getAccountPropertyType(seed.account,property);
                                     if(!propertyType) throw new Error(`Unable to read property type relating to ${seed.account}: ${property}`);
@@ -510,54 +516,60 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
         }
     }
 
-    for(let instruction of idl.instructions){
-        const name = instruction.name;
-        const nameCamel = snakeToCamel(name);
-        const NamePascal = snakeToPascal(name);
 
-        const argTypes = instruction.args;
+    if(idl.instructions){
+        for(let instruction of idl.instructions){
+            const name = instruction.name;
+            const nameCamel = snakeToCamel(name);
+            const NamePascal = snakeToPascal(name);
 
-        ixs[nameCamel] = async function(){
-            if(arguments.length !== argTypes.length){
-                throw new Error(`Incorrect arguments provided for ${name}. Received ${arguments.length}, expected ${argTypes.length}.`);
+            const argTypes = instruction.args;
+
+            ixs[nameCamel] = async function(){
+                if(arguments.length !== argTypes.length){
+                    throw new Error(`Incorrect arguments provided for ${name}. Received ${arguments.length}, expected ${argTypes.length}.`);
+                }
+
+                let ixProps: {[key: string]: any;} = {};
+                for(let account in addedAccounts){
+                    ixProps[account] = addedAccounts[account];
+                }
+
+                for(let i = 0; i < arguments.length; i++){
+                    ixProps[snakeToCamel(argTypes[i].name)] = arguments[i];
+                }
+
+                await addIxAccounts(instruction,ixProps);
+                return programClient[`get${NamePascal}Instruction`](ixProps);
             }
 
-            let ixProps: {[key: string]: any;} = {};
-            for(let account in addedAccounts){
-                ixProps[account] = addedAccounts[account];
+
+            tx[nameCamel] = async function(){
+                let ix = await ixs[nameCamel](...arguments)
+                await transactSingle(ix,nameCamel);
             }
-
-            for(let i = 0; i < arguments.length; i++){
-                ixProps[snakeToCamel(argTypes[i].name)] = arguments[i];
-            }
-
-            await addIxAccounts(instruction,ixProps);
-            return programClient[`get${NamePascal}Instruction`](ixProps);
-        }
-
-
-        tx[nameCamel] = async function(){
-            let ix = await ixs[nameCamel](...arguments)
-            await transactSingle(ix,nameCamel);
         }
     }
 
 
 
     let account: {[key: string]: Function;} = {};
-    for(let a of idl.accounts){
-        const nameCamel = pascalToCamel(a.name);
-        account[nameCamel] = async function(addressOrSeeds: Address | []){
-            if(Array.isArray(addressOrSeeds)){
-                // it's array, assume it's seeds
-                const address = await pda(addressOrSeeds);
-                return await readAccount(nameCamel, address);
-            }else{
-                // assume address
-                return await readAccount(nameCamel, addressOrSeeds);
+    if(idl.accounts){
+        for(let a of idl.accounts){
+            const nameCamel = pascalToCamel(a.name);
+            account[nameCamel] = async function(addressOrSeeds: Address | []){
+                if(Array.isArray(addressOrSeeds)){
+                    // it's array, assume it's seeds
+                    const address = await pda(addressOrSeeds);
+                    return await readAccount(nameCamel, address);
+                }else{
+                    // assume address
+                    return await readAccount(nameCamel, addressOrSeeds);
+                }
             }
         }
     }
+
 
 
     const returns = {
