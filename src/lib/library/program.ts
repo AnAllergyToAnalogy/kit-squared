@@ -122,6 +122,7 @@ export async function transact(ixs: Instruction[] = [],names: string[] = []){
 
 
     }catch(e){
+        console.error(e);
 
         if(_txWasCancelled(e as Error)){
             // TODO: properly catch this and other errors
