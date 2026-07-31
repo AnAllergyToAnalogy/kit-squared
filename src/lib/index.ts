@@ -11,18 +11,28 @@ export function init(http: string, ws: string, networkType?: NetworkType): void{
 export {getNetworkType, getNetwork, getConnection, checkAccountExists, getAccountBalance} from "./library/connection.js";
 export {onConnect, onDisconnect} from "./library/connectSchedule.js";
 export {
+
+
+    clearAddedAccounts,
+    addAccounts,
+    getAddedAccounts,
+
+    createProgram,
+} from "./library/program.js";
+
+
+export {
     transacting, 
     TRANSACTION_STATE,
     transactionState,
     onTransaction,
 
-    clearAddedAccounts,
-    addAccounts,
-    getAddedAccounts,
     transact,
+    simulate,
 
-    createProgram,
-} from "./library/program.js";
+    type Simulation,
+    type SimulationError,
+} from "./library/transaction.ts";
 
 export * from "./library/utils.js";
 export {

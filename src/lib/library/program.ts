@@ -4,7 +4,7 @@ import {Event} from "./utils.js";
 import {signer} from "./wallet.js";
 import {getConnection} from "./connection.js";
 import {typeEncoder} from "./utils.js";
-import {fetchEncodedAccount, getBase64Codec, type Address, type Codec, type Instruction, type LogsNotificationsApi, type ReadonlyUint8Array, type Slot, type TransactionError} from "@solana/kit";
+import {appendTransactionMessageInstructions, assertIsTransactionMessageWithSingleSendingSigner, createTransactionMessage, fetchEncodedAccount, getBase64Codec, getBase64EncodedWireTransaction, getBase64Encoder, getTransactionEncoder, partiallySignTransactionMessageWithSigners, partiallySignTransactionWithSigners, pipe, sequentialInstructionPlan, setTransactionMessageFeePayerSigner, setTransactionMessageLifetimeUsingBlockhash, signTransactionMessageWithSigners, singleInstructionPlan, type Address, type Codec, type Instruction, type LogsNotificationsApi, type ReadonlyUint8Array, type Slot, type TransactionError} from "@solana/kit";
 
 import type { TransactionSendingSigner } from "@solana/signers";
 
@@ -31,38 +31,9 @@ type ProgramNotification =  Readonly<{
 
 
 import {type Signature} from "@solana/kit";
+import { transactSingle } from "./transaction.ts";
 
-export let _transacting = false;
-export let transacting = writable(_transacting);
 
-function _setTransacting(state: string){
-    _transacting = state !== TRANSACTION_STATE.INITIAL;
-    transacting.set(_transacting);
-}
-export const TRANSACTION_STATE = {
-    INITIAL:    "INITIAL",
-    REQUESTED:  "REQUESTED",
-    PENDING:    "PENDING",
-}
-const INITIAL = TRANSACTION_STATE.INITIAL;
-const REQUESTED = TRANSACTION_STATE.REQUESTED;
-const PENDING = TRANSACTION_STATE.PENDING;
-
-export const transactionState = writable(TRANSACTION_STATE.INITIAL);
-
-const onRequest   = Event();
-const onSubmit    = Event();
-const onConfirm   = Event();
-const onCancel    = Event();
-const onFail      = Event();
-
-export const onTransaction = {
-    request: onRequest,
-    submit:  onSubmit,
-    confirm: onConfirm,
-    cancel:  onCancel,
-    fail:    onFail,
-}
 
 
 let addedAccounts: {[key: string]: Address;} = {};
@@ -78,68 +49,9 @@ export function getAddedAccounts(){
     return addedAccounts;
 }
 
-function _txWasCancelled(e: Error){
-    let msg;
-    if(e.message){
-        msg = e.message.toLowerCase();
-    }else{
-        msg = e.toString().toLowerCase();
-    }
-    return msg.includes('denied') || msg.includes('rejected') || msg.includes('cancelled');
-}
-
-
-export async function transact(ixs: Instruction[] = [],names: string[] = []){
-    _setTransacting(REQUESTED);
-    onRequest.trigger(names);
-
-    const connection = getConnection();
-
-    try{
-        const signature = await connection.sendTransactionFromInstructionsWithWalletApp({
-            feePayer: signer as TransactionSendingSigner,
-            instructions: ixs
-        });
-
-        _setTransacting(PENDING);
-        onSubmit.trigger(names);
-
-
-        // Set up an abort controller.
-        const abortController = new AbortController();
 
 
 
-        const confirmed = await connection.getRecentSignatureConfirmation({
-            abortSignal: abortController.signal,
-            commitment: 'confirmed',
-            signature: signature as Signature
-        });
-
-        _setTransacting(INITIAL);
-        onConfirm.trigger(names);
-
-
-
-    }catch(e){
-        console.error(e);
-
-        if(_txWasCancelled(e as Error)){
-            // TODO: properly catch this and other errors
-            onCancel.trigger(names);
-        }else{
-            onFail.trigger(names);
-        }
-
-        _setTransacting(INITIAL);
-    }
-
-}
-
-export async function transactSingle(ix: Instruction, name: string | null = null){
-    let names = name ? [name] : [];
-    return await transact([ix], names);
-}
 
 
 export async function createProgram(programClient: {[key: string]: any;}, idl: {[key: string]: any;}, signer: null | TransactionSendingSigner = null, noEvents = false){

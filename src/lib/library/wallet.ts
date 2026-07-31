@@ -40,6 +40,8 @@ const CONNECTED = WALLET_STATE.CONNECTED;
 const ERROR = WALLET_STATE.ERROR;
 
 
+let log = console.log;
+
 
 export let walletState = writable(WALLET_STATE.INITIAL);
 function _setWalletState(state: string){
@@ -251,12 +253,14 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
                 chain,
                 account: walletAccount,
             };
+            log(111)
             const [{ signature }] = await getAbortablePromise(
                 signAndSendTransactionFeature.signAndSendTransaction(
                     inputWithOptions,
                 ),
                 abortSignal,
             );
+            log(222)
             return Object.freeze([signature as SignatureBytes]);
         },
     };

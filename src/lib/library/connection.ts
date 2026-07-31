@@ -91,7 +91,13 @@ function _connect(){
                 (message) => appendTransactionMessageInstructions(instructions, message)
             );
             assertIsTransactionMessageWithSingleSendingSigner(transactionMessage);
+
+            console.log("AA1")
+
             const signatureBytes = await signAndSendTransactionMessageWithSigners(transactionMessage);
+
+            console.log("AAB")
+
             const signature = signatureBytesToBase58String(signatureBytes);
             return signature;
         };
@@ -117,12 +123,10 @@ export function getConnection() {
 }
 
 
-// !!! TODO
 export async function checkAccountExists(address: Address): Promise<boolean>{
-    // return true; 
-    //todo: this
    return await getAccountBalance(address) > 0n;
 }
 export async function getAccountBalance(address: Address): Promise<bigint>{
+    //@ts-ignore
     return await(await getConnection().getLamportBalance(address)).value;
 }

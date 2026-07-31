@@ -53,3 +53,37 @@ The lifecycle events are:
 - `onTransaction.fail(callback)` - A tx failed
 
 These follow the #[Event pattern]
+
+
+## Simulating Transactions
+The library exposes a function for simulating the result of a transaction:
+
+```typescript
+async function simulate(ixs: Instruction[] = []): Promise<Simulation>
+```
+
+Where `ixs` is of the same type as the parameter for `transact()`. It uses the Kit rpc `simulateTransaction` function, and will parse any error logs in the event that it fails. 
+
+The function returns a promise with a `Simulation` type object, which takes the following form:
+
+```typescript
+type Simulation = {
+    success: boolean,  // True if the simulated tx did not fail
+    error: null | SimulationError,  // Null if tx did not fail, error data if it failed
+    result: any,  // Just the complete response from simulateTransaction
+}
+```
+
+In the event that the simulated transction failed, the `SimulationError` type object takes the following form:
+
+```typescript
+type SimulationError = {
+
+    instruction: string, // InstructionName
+    type: string,   // anchor, program, other
+    code: string,   // 0x1234
+    number: number, // 6000
+    label: string,  // SomeCustomError
+    anchorErrorLog: string, //The full log entry with Program log: AnchorError
+}
+```
