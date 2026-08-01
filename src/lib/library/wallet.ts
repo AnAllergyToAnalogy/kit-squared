@@ -39,10 +39,6 @@ const CONNECTING = WALLET_STATE.CONNECTING;
 const CONNECTED = WALLET_STATE.CONNECTED;
 const ERROR = WALLET_STATE.ERROR;
 
-
-let log = console.log;
-
-
 export let walletState = writable(WALLET_STATE.INITIAL);
 function _setWalletState(state: string){
     walletState.set(state);
@@ -132,8 +128,6 @@ async function connectWallet(uiWallet: UiWallet){
     const accountsPromise = connectFeature
         .connect()
         .then(({ accounts }) => {
-            // console.log("connected", accounts);
-            // return accounts;
             return accounts.map(
                 getOrCreateUiWalletAccountForStandardWalletAccount_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.bind(
                     null,
@@ -253,14 +247,12 @@ function _buildTransactionSendingSigner(_networkType: NetworkType ): Transaction
                 chain,
                 account: walletAccount,
             };
-            log(111)
             const [{ signature }] = await getAbortablePromise(
                 signAndSendTransactionFeature.signAndSendTransaction(
                     inputWithOptions,
                 ),
                 abortSignal,
             );
-            log(222)
             return Object.freeze([signature as SignatureBytes]);
         },
     };

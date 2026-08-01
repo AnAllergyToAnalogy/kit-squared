@@ -51,9 +51,6 @@ function _txWasCancelled(e: Error){
 }
 
 
-let log = console.log;
-
-
 export type Simulation = {
     result: any,
     success: boolean,
@@ -148,7 +145,7 @@ export async function simulate(ixs: Instruction[] = []): Promise<Simulation>{
         replaceRecentBlockhash: true,
         sigVerify: false,
         minContextSlot: undefined,
-        innerInstructions: undefined,
+        innerInstructions: true,
         accounts: undefined
     };
 
@@ -192,16 +189,24 @@ export async function simulate(ixs: Instruction[] = []): Promise<Simulation>{
         error
     };
 
-    console.log(simulateResult);
-
 }
 
-export async function transact(ixs: Instruction[] = [],names: string[] = []){
+export async function transact(ixs: Instruction[] = [],names: string[] = [], preSimulate: boolean = true){
     _setTransacting(REQUESTED);
     onRequest.trigger(names);
 
-    const connection = getConnection();
 
+    if(preSimulate){
+        const simResult = await simulate(ixs);
+        if(!simResult.success){
+            console.error(simResult.error);
+            onFail.trigger(names);
+            _setTransacting(INITIAL);
+            return;
+        }
+    }
+
+    const connection = getConnection();
     try{
         const signature = await connection.sendTransactionFromInstructionsWithWalletApp({
             feePayer: signer as TransactionSendingSigner,
@@ -238,7 +243,7 @@ export async function transact(ixs: Instruction[] = [],names: string[] = []){
 
 }
 
-export async function transactSingle(ix: Instruction, name: string | null = null){
+export async function transactSingle(ix: Instruction, name: string | null = null, preSimulate: boolean = true){
     let names = name ? [name] : [];
-    return await transact([ix], names);
+    return await transact([ix], names, preSimulate);
 }

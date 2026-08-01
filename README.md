@@ -108,9 +108,9 @@ It also tracks the transaction state, and fires events when the tx state changes
 ### Sending Transactions
 Send a transaction with any instructions using
 ```typescript
-transact(ixs, names);
+transact(ixs, names, preSimulate);
 ```
-Where `ixs` is an array of `@solana/kit` `Instruction`s, and `names` is an optional array of ix names that will be fired with each tx lifecycle event.
+Where `ixs` is an array of `@solana/kit` `Instruction`s, and `names` is an optional array of ix names that will be fired with each tx lifecycle event. If `preSimulate` is `true`, the library will simulate the tx before requesting it, and cause this function fail if the tx will fail.
 
 ### Transaction Lifecycle
 Kit² only expects one tx to be in progress at any given time. While it doesn't prevent multiple simultaneous txs, the tx-lifecycle management is simplified for only one.

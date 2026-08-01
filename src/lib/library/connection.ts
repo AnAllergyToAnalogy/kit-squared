@@ -92,11 +92,7 @@ function _connect(){
             );
             assertIsTransactionMessageWithSingleSendingSigner(transactionMessage);
 
-            console.log("AA1")
-
             const signatureBytes = await signAndSendTransactionMessageWithSigners(transactionMessage);
-
-            console.log("AAB")
 
             const signature = signatureBytesToBase58String(signatureBytes);
             return signature;

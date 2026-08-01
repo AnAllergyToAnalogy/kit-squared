@@ -10,13 +10,15 @@ It also tracks the transaction state, and fires events when the tx state changes
 ## Sending Transactions
 While #program helpers provide methods for aiding in sending transactions, there is still a generic method for sending any transaction:
 ```typescript
-async function transact(ixs: Instruction[] = [],names: string[] = [])
+async function transact(ixs: Instruction[] = [],names: string[] = [], preSimulate: boolean = true)
 ```
 Where `ixs` is an array of `@solana/kit` `Instruction`s, and `names` is an optional array of ix names that will be fired with each tx lifecycle event. 
 
+If `preSimulate` is `true`, the library will simulate the tx before requesting it, and cause this function fail if the tx will fail.
+
 An alias function is provided for instances where you want to send a single ix in your tx, it provides no additional functionality and the former can still be used for this use case.
 ```typescript
-async function transactSingle(ix: Instruction, name: string | null = null)
+async function transactSingle(ix: Instruction, name: string | null = null, preSimulate: boolean = true)
 ```
 
 
