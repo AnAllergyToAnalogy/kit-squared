@@ -40,13 +40,13 @@ typeEncoder.u64.encode(12345n);
 
 ## `address
 ```typescript
-function address(str: string)
+function encodeAddress(str: string)
 ```
 
 An alias for typeEncoder.address. Makes syntax nicer when working with this fairly common type. ie, in PDA seeds:
 
 ```typescript
-programHelper.pda(["a string", address("abcd...")]);
+programHelper.pda(["a string", encodeAddress("abcd...")]);
 ```
 
 

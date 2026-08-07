@@ -172,7 +172,6 @@ export async function simulate(ixs: Instruction[] = []): Promise<Simulation>{
     const base64EncodedWireTransaction = getBase64EncodedWireTransaction(partiallySigned);
 
 
-
     let simulateResult = await rpc
         //@ts-ignore
         .simulateTransaction(base64EncodedWireTransaction, simulateTxConfig)

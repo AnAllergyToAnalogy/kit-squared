@@ -24,27 +24,7 @@ export function isNumberType(type: string){
     return types.includes(type) || isIntegerType(type);
 }
 
-
-
-
 // Encoders
-// export const typeEncoder = (()=>{
-//     //TODO: types probably not complete
-//
-//     // const types =  ["isize","usize"];
-//     const types =  ["Address"];
-//     for(let i = 0; i < 8; i++){
-//         const s = 8 * (2 ** i);
-//         types.push("U"+s);
-//         types.push("I"+s);
-//     }
-//     const e = {};
-//     for(let T of types){
-//         const t = pascalToCamel(T);
-//         e[t] = kit[`get${T}Encoder`]();
-//     }
-//     return e;
-// })();
 export const typeEncoder = (()=>{
     const types =  ["Address","F32","F64"];
 
@@ -53,8 +33,6 @@ export const typeEncoder = (()=>{
         types.push("U"+s);
         types.push("I"+s);
     }
-
-    // log(types);
 
     const e = {} as {[key: string]: any;};
     for(let T of types){
@@ -67,7 +45,7 @@ export const typeEncoder = (()=>{
     return e;
 })();
 
-export function address(str: string){
+export function encodeAddress(str: string){
     return typeEncoder.address.encode(str);
 }
 export function camelToSnake(name: string){
@@ -139,11 +117,6 @@ export interface OnEvent {
 
 export interface EventType { (callback: Callback): void; killAll: Function, trigger: Function; }
 export function Event(){
-    // returns onEvent function,
-    //  this function returns another func which you use to unsubscribe from event
-    //  onEvent.triggger(..args) triggers the event
-
-
     let cid = 0;
     let callbacks: {[key: string]: Function} = {};
 
@@ -175,8 +148,6 @@ export function Event(){
 
 
 export async function getPDA(seeds: any[], programId: Address){
-
-
     let seeds_parsed = [];
     for(let s = 0; s < seeds.length; s++){
         const seed = seeds[s];
@@ -200,7 +171,6 @@ export async function getPDA(seeds: any[], programId: Address){
             }
 
             seeds_parsed.push(typeEncoder[t].encode(value));
-            // if(!isIntegerType)
         }else{
             throw new Error("Unable to interpret seed: "+seed);
         }
@@ -218,7 +188,6 @@ export async function getPDA(seeds: any[], programId: Address){
 
 export function lamportsToSol(lamports: bigint): string{
     function _trimTail(str: string){
-        let clean = "";
         let i = str.indexOf(".");
         if(i === -1){
             return str;
@@ -256,11 +225,8 @@ export function lamportsToSol(lamports: bigint): string{
 
 export function roundSol(sol: number): number{
     let lamports = solToLamports(sol);
-
     let length = lamports.toString().length;
-
     let shave = (length <= 9)?(9 - length + 3 ):3;
-
     return Math.floor(sol * (10 ** shave))/(10 ** shave);
 
 
@@ -359,8 +325,6 @@ export function parseMilliseconds(time: bigint){
 export function isSameKey(key0: any,key1: any){
     return key0.toString() === key1.toString();
 }
-
-
 
 
 export function readStorage(key: string,defaultVal: any = null){

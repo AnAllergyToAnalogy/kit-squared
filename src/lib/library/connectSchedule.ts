@@ -32,10 +32,6 @@ export const onConnect = function(callback: Callback, fireImmediatelyIfAlreadyCo
     }
     return onConnectEvent(callback);
 }
-// export const onDisconnect = function(callback: Callback){
-//     if(disconnected)
-// }
-
 
 async function _checkSchedule(loopback = false){
 

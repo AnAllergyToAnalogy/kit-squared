@@ -118,10 +118,7 @@ let walletWatchInterval = setInterval(async ()=>{
         }else{
             // disconnect then reconnect
             console.error("This would be a disconnect then reconnect..")
-
-            // log("Apparent address:",apparentAddress);
-            // log("selected address:", selectedWalletAddress)
-
+            
             const selectedWalletName = outputWallets[selectedWalletIndex].name;
             await disconnectWallet();
             await selectWallet(selectedWalletName);
