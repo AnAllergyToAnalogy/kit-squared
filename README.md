@@ -205,11 +205,11 @@ Then follow the token [exmaples in the Solana cookbook](https://solana.com/devel
 
 # Accolades
 
-- [<img src="./static/superteam-aus-logo.webp" alt="drawing" width="25"/> Superteam Australia Grant recipient](https://superteam.fun/earn/grants/australia-grants)
-- [<img src="./static/colosseum-logo.jpeg" alt="drawing" width="25"/> <img src="./static/frontier-logo.png" alt="drawing" width="100"/> Solana Colosseum: Frontier Hackathon Side-Track winner](https://superteam.fun/earn/listing/superteam-australia-or-first-time-builders-side-track)
+
+- [<img src="https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/static/superteam-aus-logo.webp?raw=true" alt="drawing" width="25"/> Superteam Australia Grant recipient](https://superteam.fun/earn/grants/australia-grants)
+- [<img src="https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/static/colosseum-logo.jpeg?raw=true" alt="Colosseum Logo" width="25"/> <img src="https://github.com/AnAllergyToAnalogy/kit-squared/blob/main/static/frontier-logo.png?raw=true" alt="drawing" width="100"/> Solana Colosseum: Frontier Hackathon Side-Track winner](https://superteam.fun/earn/listing/superteam-australia-or-first-time-builders-side-track)
  
-
-
+ 
 
 
 # Contents
