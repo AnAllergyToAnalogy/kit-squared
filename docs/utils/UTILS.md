@@ -17,4 +17,4 @@ Helper functions that wrap around localStorage to make the syntax a little frien
 Functions for dealing with types. 
 
 ### [General](./GENERAL.md) 
-General functions that dont fit in any other category but are useful for Solana tests.
+General functions that dont fit in any other category but are useful for Solana dapps.
