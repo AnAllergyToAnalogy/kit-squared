@@ -12,6 +12,7 @@ export {getNetworkType, getNetwork, getConnection, checkAccountExists, getAccoun
 export {onConnect, onDisconnect} from "./library/connectSchedule.js";
 export {
 
+    onSubscriptionFail,
 
     clearAddedAccounts,
     addAccounts,

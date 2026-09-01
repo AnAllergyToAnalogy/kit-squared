@@ -1,10 +1,11 @@
-import { writable } from "svelte/store";
 import {camelToSnake, snakeToCamel, camelToPascal, snakeToPascal, getPDA, pascalToCamel, sleep, type EventType, type Callback, isIntegerType} from "./utils.js";
 import {Event} from "./utils.js";
-import {signer} from "./wallet.js";
 import {getConnection} from "./connection.js";
 import {typeEncoder} from "./utils.js";
-import {appendTransactionMessageInstructions, assertIsTransactionMessageWithSingleSendingSigner, createTransactionMessage, fetchEncodedAccount, getBase64Codec, getBase64EncodedWireTransaction, getBase64Encoder, getTransactionEncoder, partiallySignTransactionMessageWithSigners, partiallySignTransactionWithSigners, pipe, sequentialInstructionPlan, setTransactionMessageFeePayerSigner, setTransactionMessageLifetimeUsingBlockhash, signTransactionMessageWithSigners, singleInstructionPlan, type Address, type Codec, type Instruction, type LogsNotificationsApi, type ReadonlyUint8Array, type Slot, type TransactionError} from "@solana/kit";
+import {
+    fetchEncodedAccount, getBase64Codec, 
+    type Address, type Codec, 
+    type ReadonlyUint8Array, type Slot, type TransactionError} from "@solana/kit";
 
 import type { TransactionSendingSigner } from "@solana/signers";
 
@@ -50,6 +51,7 @@ export function getAddedAccounts(){
 }
 
 
+export let onSubscriptionFail = Event();
 
 
 
@@ -137,6 +139,8 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
             programNotifications= await logsNotifications.subscribe({ abortSignal: abortController.signal });
         }catch(e){
             console.error(e);
+            onSubscriptionFail.trigger(e);
+            
             throw new Error("failed to subscribe to program")
             return;
         }
