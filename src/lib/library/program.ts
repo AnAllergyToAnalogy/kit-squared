@@ -495,6 +495,7 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
             killProgram,
 
             startSubscription: _subscribeToProgram,
+            onEventDropout,
 
             account,
 
