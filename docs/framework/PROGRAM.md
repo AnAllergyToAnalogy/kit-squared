@@ -107,6 +107,17 @@ myProgram.on('someEvent', (eventData, slotNumber, signature) => {
 })
 ```
 
+## Event Dropout
+A callback may be assigned for when the websocket connection is lost. This is useful for making sure changes that occured during downtime are not missed.
+
+```typescript
+helper.onEventDropout(callback = (programName) => {
+   // Do some stuff.
+})
+```
+
+
+
 ## PDAs
 
 The helper provides a method for getting the address of a PDA. The seeds must be provided, see the [PDA section of the docs](./../PDAs.md) for nuances of passing specific datatypes.
