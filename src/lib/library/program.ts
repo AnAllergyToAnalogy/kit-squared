@@ -118,7 +118,6 @@ export async function createProgram(programClient: {[key: string]: any;}, idl: {
                 _parseNotification(notification);
             }
         }catch(e){
-            //todo e catch
             // The subscription went down.
             // Retry it and also trigger event informing connection died
             onEventDropout.trigger(programName);
