@@ -71,6 +71,7 @@ export {
 } from "./library/walletSelection.js";
 
 // Todo: Example Component
+//
 // export  { 
 //     requestAndConnectWallet,
 //     visible,

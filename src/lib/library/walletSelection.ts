@@ -106,6 +106,7 @@ let walletWatchInterval = setInterval(async ()=>{
     }
 
     // TODO: it is possible that accounts[0] is not always gonna be the one
+    //
 
     const apparentAddress = outputWallets[selectedWalletIndex].accounts[0].address;
 
